@@ -45,7 +45,7 @@
   flex-shrink: 0;
 }
 
-.latest-entry {
+.latest-entry{
   flex: 1;
   min-width: 0; /* prevents weird overflow in flex layouts */
 }
@@ -115,8 +115,7 @@
       */
 
       .header img {
-        max-width: 220px;
-        width: 100%;
+        width: clamp(140px, 40vw, 220px);
         height: auto;
       }
     
@@ -127,7 +126,7 @@
 
       .header-text h1 {
        margin: 0;       /* Small spacing below title */
-       font-size: 4.5rem;     /* Smaller than main title */
+       font-size: clamp(2.4rem, 6vw, 4.5rem);     /* Smaller than main title */
        color: #ff2b2b;           /* Softer contrast */
       }
 
@@ -136,7 +135,7 @@
       */
       .header-text h2 {
        margin: 6px 0 0;
-       font-size: 3rem;
+       font-size: clamp(1.5rem, 4.5vw, 3rem);
        font-weight: normal;
        color: #ff6b6b;   /* Slightly lighter red for hierarchy */
        }
@@ -155,6 +154,18 @@
           color: #ff8c2a; /* brighter orange on hover */
           border-bottom-color: rgba(255, 140, 42, 0.9);
       }
+
+    /*--- Prevents padding from eating up screen --*/
+      @media (max-width: 800px) {
+  body {
+    padding: 12px;
+  }
+
+  .frame {
+    padding: 12px;
+    border-width: 10px;
+  }
+}
      
       
       /*-- Makes two page layout collapse on small screens --*/
@@ -162,7 +173,24 @@
       .content { flex-direction: column; }
       .archive { width: 100%; }
       }
+    
+      /*-- Allows the reader to stack on small screens --*/
+ @media (max-width: 800px) {
+  .content { 
+    flex-direction: column; 
+  }
 
+  .archive { 
+    width: 100%; 
+  }
+
+  /* NEW: make header vertical on mobile */
+  .header {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+      
      </style>
   </head>
 
@@ -188,7 +216,7 @@
          <p class="nav">
          <a href="about.html">About</a>
          <span class="nav-sep"></span>
-         <a href="malto:asktheargus@gmail.com">Contact me</a>
+         <a href="mailto:asktheargus@gmail.com">Contact me</a>
          <span class="nav-email">(asktheargus@gmail.com)</span>
          </p>
         </div>
