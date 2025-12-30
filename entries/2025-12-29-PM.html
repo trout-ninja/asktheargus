@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>2025-12-29-AM - Sassy AI</title>
+  <style>
+    body { margin:0; padding:24px; font-family:serif; background:#0b1d3a; color:#ff6b6b; line-height:1.6; }
+    .frame { padding:26px; border:14px solid transparent; border-radius:10px; max-width:900px; margin:0 auto;
+      border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Cg fill='none' stroke='%23ff2b2b' stroke-width='4' stroke-linecap='round'%3E%3Cpath d='M8 16c8 0 8-8 16-8s8 8 16 8 8-8 16-8'/%3E%3Cpath d='M8 48c8 0 8 8 16 8s8-8 16-8 8 8 16 8'/%3E%3Cpath d='M16 8c0 8-8 8-8 16s8 8 8 16-8 8-8 16'/%3E%3Cpath d='M48 8c0 8 8 8 8 16s-8 8-8 16 8 8 8 16'/%3E%3C/g%3E%3C/svg%3E") 20 round;
+    }
+    a { color:#d36a1e; text-decoration:none; border-bottom:1px solid rgba(211,106,30,.5); }
+    a:hover { color:#ff2b2b; border-bottom-color:#ff2b2b; }
+    h1 { color:#ff2b2b; margin:0; font-size:2.6rem; }
+    .meta { margin-top:.25rem; opacity:.9; }
+    h2 { color:#ff2b2b; margin-top:2rem; }
+    ul { margin: .5rem 0 0 1.2rem; }
+    .tagbox { margin-top:1rem; padding:14px; border:1px solid rgba(255,107,107,.25); border-radius:8px; }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <p><a href="../index.html">&larr; Back to Home</a></p>
+
+    <h1>Another Sandbox Down</h1>
+    <div class="meta">2025-12-29-PM</div>
+
+    <h2>What I Worked On</h2>
+      <!-- Write your entry here -->
+<p>If you are interested in trying it out, I’ve attached the sandbox <a href=”assets/sandboxes/lfs101_playground_sections_1-13.zip” download>
+    <b>HERE</b></a>
+ You will have to make some users and groups for the script to work. It’s all part of the game.</p>
+
+<p>I return to my studies this evening finding I still need further clarification from Shevek, as I desire to understand things conceptually, not just in application. It is a discouraging process. I found myself somewhat certain a “sticky bit” makes it so others cannot delete another users file created in that directory. Shevek assures me, as always, this is partially correct. He replies when I ask for confirmation:</p>
+
+<p>The sticky bit on a directory allows users to create files there but restricts deletion or renaming to the file’s owner, the directory owner, or root.</p>
+
+<p>The devil seems always to be in the details of how things are defined with computers</p>
+
+<p>I forget who brought up umask first, LFS207 or Shevek, or me, but I stumbled upon another trap in this sandbox. Shevek had me run a script that made a text document and the script set its umask value to 077. The mission stated I was to make no permissions for others, and a minimum of group readable. The task seemed to easy, I simply ran chmod 660 on the file. The follow up question, the trap, however was, why did it initially have r-------- permissions. The solution lay in the umask value. Shevek pointed out yet another blind spot. I was only aware umask could be set by the user and per session, unless reconfigured to do otherwise. I was not aware it could be included in a script.</p>
+
+<p>I was so used to doing things the chmod way, I’d forgotten how to change group ownership as well, using chown. Shevek provided me with some hints, and I was back on track. I am not fluid yet, but I’m getting there.</p>
+
+<p>I also learned about the power of the <b>export</b> command. Shevek usually spices things up by adding something I might not know into the mix. I was unaware variables could be exported in such a way.</p>
+
+<p>I encountered another curve ball. Mission objective: find a file that’s not in your path. But how? After much contemplation, I asked Shevek for the answer. I was eager to learn a new method for employing find. Find / -name <file name> 2>/dev/null will search the entire directory. Good skill to know.</p>
+ 
+      
+      <h2>Skills Learned</h2>
+    <div class="tagbox">
+      <ul>
+        <li>Find and grep revisted</li>
+        <li>Permissions and groups practice</li>
+        <li>Stickybits and Setgid</li>
+      </ul>
+    </div>
+
+    <h2>Notes / Next Steps</h2>
+    <ul>
+        <li>I need to practive a little more before moving on in LFS207</li>
+        <li>Link to Sandbox: <a href=”assets/sandboxes/lfs101_playground_sections_1-13.zip” download>Shevek1</a>
+ </li>
+    </ul>
+  </div>
+</body>
+</html>
+
