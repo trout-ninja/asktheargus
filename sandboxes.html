@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+ <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Sanboxes Archive</title>
+  <style>
+    body { margin:0; padding:24px; font-family:serif; background:#0b1d3a; color:#ff6b6b; line-height:1.6; }
+    .frame { padding:26px; border:14px solid transparent; border-radius:10px; max-width:900px; margin:0 auto;
+      border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Cg fill='none' stroke='%23ff2b2b' stroke-width='4' stroke-linecap='round'%3E%3Cpath d='M8 16c8 0 8-8 16-8s8 8 16 8 8-8 16-8'/%3E%3Cpath d='M8 48c8 0 8 8 16 8s8-8 16-8 8 8 16 8'/%3E%3Cpath d='M16 8c0 8-8 8-8 16s8 8 8 16-8 8-8 16'/%3E%3Cpath d='M48 8c0 8 8 8 8 16s-8 8-8 16 8 8 8 16'/%3E%3C/g%3E%3C/svg%3E") 20 round;
+    }
+    a { color:#d36a1e; text-decoration:none; border-bottom:1px solid rgba(211,106,30,.5); }
+    a:hover { color:#ff2b2b; border-bottom-color:#ff2b2b; }
+    h1 { color:#ff2b2b; margin:0; font-size:2.6rem; }
+    .meta { margin-top:.25rem; opacity:.9; }
+    h2 { color:#ff2b2b; margin-top:2rem; }
+    ul { margin: .5rem 0 0 1.2rem; }
+    .tagbox { margin-top:1rem; padding:14px; border:1px solid rgba(255,107,107,.25); border-radius:8px; }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <p><a href="../index.html">&larr; Back to Home</a></p>
+
+    <h1>Sandboxes Archive</h1>
+    <div class="meta">Updated: 12-31-25</div>
+    <p><b>* USE A VIRTUAL MACHINE FOR ALL SANDBOXES</b></p>
+    <!-- List of most recent sandboxes with brief description starting from newest to oldest -->
+    <section>
+        <h2>Shevek 2</h2>
+        <p>Extended LFS207 sandbox covering sections 1-14. Builds on Shevek 1 with additional process control, job management, and path resolution challenges.</p>
+        <p>
+         <a href="https://github.com/trout-ninja/asktheargus/releases/download/v1.0.0/lfs207_sections_1_14_sandbox_v2.tar.gz">Shevek2</a>
+        </p>
+    </section>
+    <section>
+        <h2>Shevek1</h2>
+            <p>LFS207 sandbox covering sections 1–13. Focuses on permissions,
+    users and groups, sticky bits, umask behavior, and environment variables.
+    Includes intentional misconfigurations and guided missions.</p>
+            <p>
+            <a href="https://github.com/trout-ninja/asktheargus/releases/download/lfs207_1-13_sandbox_v1.0.0/lfs101_playground_sections_1-13.zip">Shevek1</a>
+            </p>
+    </section>
+  </div>
+ </body>
+</html>
+

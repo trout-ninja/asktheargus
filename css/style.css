@@ -1,0 +1,175 @@
+/* Ask the Argus - Main Stylesheet */
+      /*===== CSS Parameters ====*/
+.nav-email { color: #ff6b6b; margin-left: 8px; font-size: 1.1rem; }
+
+.nav-sep {
+  margin: 0 10px;
+  opacity: 0.7;
+}
+
+.latest { margin-top: 28px; }
+.latest h3 { color:#ff2b2b; font-size: 1.8rem; margin: 0 0 12px; }
+.entry-card { padding: 16px; border: 1px solid rgba(255,107,107,.25); border-radius: 10px; max-width: 900px; }
+.entry-meta { opacity:.9; margin-bottom: 6px; }
+.entry-card h4 { margin: 0 0 8px; font-size: 1.6rem; }
+.entry-card h5 { margin: 14px 0 8px; color:#ff2b2b; font-size: 1.1rem; }
+.entry-card ul { margin: 0 0 0 1.2rem; }
+.content {
+  display: flex;
+  gap: 28px;
+  margin-top: 28px;
+  align-items: flex-start;
+}
+
+.archive {
+  width: 240px;
+  flex-shrink: 0;
+}
+
+.latest-entry{
+  flex: 1;
+  min-width: 0; /* prevents weird overflow in flex layouts */
+}
+.archive h3 {
+  margin-top: 0;
+  color: #ff2b2b;
+}
+
+.archive ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.archive li {
+  margin: 0 0 12px;
+}
+
+.archive a {
+  color: #d36a1e;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(211, 106, 30, 0.5);
+}
+
+.archive a:hover {
+  color: #ff2b2b;
+  border-bottom-color: #ff2b2b;
+}
+
+      /*===== Base Page Styles =====*/
+      body {
+       margin: 0;			    /* Remove default browser margin */
+       padding: 24px;			/* Create breathing room around content */
+       font-family: serif;		/* Global font choice */
+       background-color: #0b1d3a; /*Dark blue background color */
+       color: #ff2b2b;          /* Bright red text*/  
+      }
+
+      /* A framed panel so the border has a canvas */
+      
+      .frame {
+          padding: 18px;    /* space between content and border  */
+          border: 14px solid transparent;
+          border-radius: 10px;     /* optionally slightly soft corners*/
+          display: block;   /* frame hugs the content  */
+          max-width: 1100px;
+          margin: 0 auto;
+
+          /* Celtic-knot inspired border  */
+          border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Cg fill='none' stroke='%23ff2b2b' stroke-width='4' stroke-linecap='round'%3E%3Cpath d='M8 16c8 0 8-8 16-8s8 8 16 8 8-8 16-8'/%3E%3Cpath d='M8 48c8 0 8 8 16 8s8-8 16-8 8 8 16 8'/%3E%3Cpath d='M16 8c0 8-8 8-8 16s8 8 8 16-8 8-8 16'/%3E%3Cpath d='M48 8c0 8 8 8 8 16s-8 8-8 16 8 8 8 16'/%3E%3C/g%3E%3C/svg%3E") 20 round;
+
+      }
+       /*
+         Header layout countainer
+         Uses Flexbox to place image and text side-by-side
+      */
+      .header {
+        display: flex;         /* Horizontal layout */
+        align-items: center;   /* Vertical alignment */
+        gap: 24px;             /* Space between image and text */
+        margin-top: 20px;      /* Push header slightly down from top */
+      }
+      
+      /*
+         Header image styling
+         Width controls size; height auto preserves aspect ratio
+      */
+
+      .header img {
+        width: clamp(140px, 40vw, 220px);
+        height: auto;
+      }
+    
+      /*
+         Subtitle styling
+         Smaller, lighter, explanatory text below title
+      */
+
+      .header-text h1 {
+       margin: 0;       /* Small spacing below title */
+       font-size: clamp(2.4rem, 6vw, 4.5rem);     /* Smaller than main title */
+       color: #ff2b2b;           /* Softer contrast */
+      }
+
+      /*
+         Subtitle styling
+      */
+      .header-text h2 {
+       margin: 6px 0 0;
+       font-size: clamp(1.5rem, 4.5vw, 3rem);
+       font-weight: normal;
+       color: #ff6b6b;   /* Slightly lighter red for hierarchy */
+       }
+
+      /* The "about" button parameters */
+
+      .nav a {
+          color: #d36a1e; /* dark orange */
+          text-decoration: none;
+          font-size: 1.3rem;
+          border-bottom: 1px solid rgba(211, 100, 30, 0.5);
+      }
+
+      .nav a:hover,
+      .nav a:focus {
+          color: #ff8c2a; /* brighter orange on hover */
+          border-bottom-color: rgba(255, 140, 42, 0.9);
+      }
+
+    /*--- Prevents padding from eating up screen --*/
+      @media (max-width: 800px) {
+  body {
+    padding: 12px;
+  }
+
+  .frame {
+    padding: 12px;
+    border-width: 10px;
+  }
+}
+     
+      
+      /*-- Makes two page layout collapse on small screens --*/
+      @media (max-width: 800px) {
+      .content { flex-direction: column; }
+      .archive { width: 100%; }
+      }
+    
+      /*-- Allows the reader to stack on small screens --*/
+ @media (max-width: 800px) {
+  .content { 
+    flex-direction: column; 
+  }
+
+  .archive { 
+    width: 100%; 
+  }
+
+  /* NEW: make header vertical on mobile */
+  .header {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+      
+
