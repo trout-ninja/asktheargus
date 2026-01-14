@@ -30,14 +30,6 @@
             <a href="mailto:asktheargus@gmail.com">Contact</a>
           </nav>
        
-          <!-- Search -->
-        <div id="search"></div>
-        <script>
-            window.addEventListener("DOMContentLoaded", () => {
-                new PagefindUI({ element: "#search", showSubResults: true });
-            });
-        </script>
-
           <!-- Optional: keep if you want the email displayed -->
           <p class="nav-email">(asktheargus@gmail.com)</p>
         </div>
@@ -95,6 +87,20 @@
         </main>
       </div>
     </div>
+  
+  
+
+  <script>
+    window.addEventListener("DOMContentLoaded", () => {
+      if (window.PagefindUI) {
+        new PagefindUI({
+          element: "#search",
+          showSubResults: true
+        });
+      }
+    });
+  </script>
+
   </body>
 </html>
 
