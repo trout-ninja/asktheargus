@@ -1,19 +1,57 @@
 /* Ask the Argus - Main Stylesheet */
-      /*===== CSS Parameters ====*/
-.nav-email { color: #ff6b6b; margin-left: 8px; font-size: 1.1rem; }
+
+/* =========================
+   Components / Page Modules
+   ========================= */
+
+.nav-email {
+  color: #ff6b6b;
+  margin-left: 8px;
+  font-size: 1.1rem;
+}
 
 .nav-sep {
   margin: 0 10px;
   opacity: 0.7;
 }
 
-.latest { margin-top: 28px; }
-.latest h3 { color:#ff2b2b; font-size: 1.8rem; margin: 0 0 12px; }
-.entry-card { padding: 16px; border: 1px solid rgba(255,107,107,.25); border-radius: 10px; max-width: 900px; }
-.entry-meta { opacity:.9; margin-bottom: 6px; }
-.entry-card h4 { margin: 0 0 8px; font-size: 1.6rem; }
-.entry-card h5 { margin: 14px 0 8px; color:#ff2b2b; font-size: 1.1rem; }
-.entry-card ul { margin: 0 0 0 1.2rem; }
+.latest {
+  margin-top: 28px;
+}
+
+.latest h3 {
+  color: #ff2b2b;
+  font-size: 1.8rem;
+  margin: 0 0 12px;
+}
+
+.entry-card {
+  padding: 16px;
+  border: 1px solid rgba(255, 107, 107, 0.25);
+  border-radius: 10px;
+  max-width: 900px;
+}
+
+.entry-meta {
+  opacity: 0.9;
+  margin-bottom: 6px;
+}
+
+.entry-card h4 {
+  margin: 0 0 8px;
+  font-size: 1.6rem;
+}
+
+.entry-card h5 {
+  margin: 14px 0 8px;
+  color: #ff2b2b;
+  font-size: 1.1rem;
+}
+
+.entry-card ul {
+  margin: 0 0 0 1.2rem;
+}
+
 .content {
   display: flex;
   gap: 28px;
@@ -26,10 +64,11 @@
   flex-shrink: 0;
 }
 
-.latest-entry{
+.latest-entry {
   flex: 1;
   min-width: 0; /* prevents weird overflow in flex layouts */
 }
+
 .archive h3 {
   margin-top: 0;
   color: #ff2b2b;
@@ -56,88 +95,106 @@
   border-bottom-color: #ff2b2b;
 }
 
-      /*===== Base Page Styles =====*/
-      body {
-       margin: 0;			    /* Remove default browser margin */
-       padding: 24px;			/* Create breathing room around content */
-       font-family: serif;		/* Global font choice */
-       background-color: #0b1d3a; /*Dark blue background color */
-       color: #ff2b2b;          /* Bright red text*/  
-      }
+/* =========================
+   Base Page Styles
+   ========================= */
 
-      /* A framed panel so the border has a canvas */
-      
-      .frame {
-          padding: 18px;    /* space between content and border  */
-          border: 14px solid transparent;
-          border-radius: 10px;     /* optionally slightly soft corners*/
-          display: block;   /* frame hugs the content  */
-          max-width: 1100px;
-          margin: 0 auto;
+body {
+  margin: 0; /* Remove default browser margin */
+  padding: 24px; /* Create breathing room around content */
+  font-family: serif; /* Global font choice */
+  background-color: #0b1d3a; /* Dark blue background color */
+  color: #ff2b2b; /* Bright red text */
+}
 
-          /* Celtic-knot inspired border  */
-          border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Cg fill='none' stroke='%23ff2b2b' stroke-width='4' stroke-linecap='round'%3E%3Cpath d='M8 16c8 0 8-8 16-8s8 8 16 8 8-8 16-8'/%3E%3Cpath d='M8 48c8 0 8 8 16 8s8-8 16-8 8 8 16 8'/%3E%3Cpath d='M16 8c0 8-8 8-8 16s8 8 8 16-8 8-8 16'/%3E%3Cpath d='M48 8c0 8 8 8 8 16s-8 8-8 16 8 8 8 16'/%3E%3C/g%3E%3C/svg%3E") 20 round;
+/* Global media defaults */
+img {
+    max-width:100%;
+    height: auto;
+    display: block;
+}
 
-      }
-       /*
-         Header layout countainer
-         Uses Flexbox to place image and text side-by-side
-      */
-      .header {
-        display: flex;         /* Horizontal layout */
-        align-items: center;   /* Vertical alignment */
-        gap: 24px;             /* Space between image and text */
-        margin-top: 20px;      /* Push header slightly down from top */
-      }
-      
-      /*
-         Header image styling
-         Width controls size; height auto preserves aspect ratio
-      */
+/* Entry content spacing */
+.entry-content img {
+    margin: 1.2rem 0;
+}
 
-      .header img {
-        width: clamp(140px, 40vw, 220px);
-        height: auto;
-      }
-    
-      /*
-         Subtitle styling
-         Smaller, lighter, explanatory text below title
-      */
+/* =========================
+   Image Lightbox (overlay)
+   =========================*/
+/* Optional: make inline images look clickable */
+a.zoomable img {
+  cursor: zoom-in;
+}
 
-      .header-text h1 {
-       margin: 0;       /* Small spacing below title */
-       font-size: clamp(2.4rem, 6vw, 4.5rem);     /* Smaller than main title */
-       color: #ff2b2b;           /* Softer contrast */
-      }
+/* A framed panel so the border has a canvas */
+.frame {
+  padding: 18px; /* space between content and border */
+  border: 14px solid transparent;
+  border-radius: 10px; /* optionally slightly soft corners */
+  display: block; /* frame hugs the content */
+  max-width: 1100px;
+  margin: 0 auto;
 
-      /*
-         Subtitle styling
-      */
-      .header-text h2 {
-       margin: 6px 0 0;
-       font-size: clamp(1.5rem, 4.5vw, 3rem);
-       font-weight: normal;
-       color: #ff6b6b;   /* Slightly lighter red for hierarchy */
-       }
+  /* Celtic-knot inspired border */
+  border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Cg fill='none' stroke='%23ff2b2b' stroke-width='4' stroke-linecap='round'%3E%3Cpath d='M8 16c8 0 8-8 16-8s8 8 16 8 8-8 16-8'/%3E%3Cpath d='M8 48c8 0 8 8 16 8s8-8 16-8 8 8 16 8'/%3E%3Cpath d='M16 8c0 8-8 8-8 16s8 8 8 16-8 8-8 16'/%3E%3Cpath d='M48 8c0 8 8 8 8 16s-8 8-8 16 8 8 8 16'/%3E%3C/g%3E%3C/svg%3E") 20 round;
+}
 
-      /* The "about" button parameters */
+/*
+  Header layout container
+  Uses Flexbox to place image and text side-by-side
+*/
+.header {
+  display: flex; /* Horizontal layout */
+  align-items: center; /* Vertical alignment */
+  gap: 24px; /* Space between image and text */
+  margin-top: 20px; /* Push header slightly down from top */
+}
 
-      .nav a {
-          color: #d36a1e; /* dark orange */
-          text-decoration: none;
-          font-size: 1.3rem;
-          border-bottom: 1px solid rgba(211, 100, 30, 0.5);
-      }
+/*
+  Header image styling
+  Width controls size; height auto preserves aspect ratio
+*/
+.header img {
+  width: clamp(140px, 40vw, 220px);
+  height: auto;
+}
 
-      .nav a:hover,
-      .nav a:focus {
-          color: #ff8c2a; /* brighter orange on hover */
-          border-bottom-color: rgba(255, 140, 42, 0.9);
-      }
+/* Title */
+.header-text h1 {
+  margin: 0;
+  font-size: clamp(2.4rem, 6vw, 4.5rem);
+  color: #ff2b2b;
+}
 
-    /*--- Prevents padding from eating up screen --*/
-      @media (max-width: 800px) {
+/* Subtitle */
+.header-text h2 {
+  margin: 6px 0 0;
+  font-size: clamp(1.5rem, 4.5vw, 3rem);
+  font-weight: normal;
+  color: #ff6b6b;
+}
+
+/* Nav links (e.g., About button) */
+.nav a {
+  color: #d36a1e; /* dark orange */
+  text-decoration: none;
+  font-size: 1.3rem;
+  border-bottom: 1px solid rgba(211, 100, 30, 0.5);
+}
+
+.nav a:hover,
+.nav a:focus {
+  color: #ff8c2a; /* brighter orange on hover */
+  border-bottom-color: rgba(255, 140, 42, 0.9);
+}
+
+/* =========================
+   Responsive
+   ========================= */
+
+@media (max-width: 800px) {
+  /* Prevents padding from eating up screen */
   body {
     padding: 12px;
   }
@@ -146,30 +203,284 @@
     padding: 12px;
     border-width: 10px;
   }
-}
-     
-      
-      /*-- Makes two page layout collapse on small screens --*/
-      @media (max-width: 800px) {
-      .content { flex-direction: column; }
-      .archive { width: 100%; }
-      }
-    
-      /*-- Allows the reader to stack on small screens --*/
- @media (max-width: 800px) {
-  .content { 
-    flex-direction: column; 
+
+  /* Two-column layout collapses */
+  .content {
+    flex-direction: column;
   }
 
-  .archive { 
-    width: 100%; 
+  .archive {
+    width: 100%;
   }
 
-  /* NEW: make header vertical on mobile */
+  /* Header becomes vertical on mobile */
   .header {
     flex-direction: column;
     text-align: center;
   }
+}
+/* =========================
+   Entry Pages (entries/*.html)
+   ========================= */
+
+.entry-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 18px;
+}
+
+.entry-top {
+  margin-top: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 107, 107, 0.25);
+}
+
+.site-title {
+  margin: 0;
+  color: #ff6b6b;
+  font-size: 1.2rem;
+}
+
+.entry-title {
+  margin: 6px 0 6px;
+  color: #ff2b2b;
+  font-size: clamp(2.0rem, 4vw, 3.0rem);
+}
+
+.entry-subtitle {
+  margin: 0;
+  color: #ff6b6b;
+  font-size: 1.15rem;
+}
+
+.synopsis {
+  margin-top: 18px;
+  padding: 14px 16px;
+  border: 1px solid rgba(255, 107, 107, 0.25);
+  border-radius: 10px;
+}
+
+.synopsis h2 {
+  margin: 0 0 8px;
+  color: #ff2b2b;
+}
+
+.synopsis p {
+  margin: 0;
+  color: #ff6b6b;
+  line-height: 1.5;
+}
+
+/* =========================
+   Collapsible Panels (details.panel)
+   ========================= */
+
+.entry-sections {
+  margin-top: 18px;
+}
+
+.panel {
+  margin: 14px 0;
+  border: 1px solid rgba(255, 107, 107, 0.25);
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.panel > summary {
+  list-style: none; /* removes default marker in some browsers */
+  cursor: pointer;
+  padding: 12px 14px;
+  font-size: 1.25rem;
+  color: #ff2b2b;
+  background: rgba(255, 43, 43, 0.06);
+  user-select: none;
+}
+
+.panel > summary::-webkit-details-marker {
+  display: none; /* removes default marker in WebKit */
+}
+
+/* Optional: add your own indicator */
+.panel > summary::after {
+  content: "▾";
+  float: right;
+  opacity: 0.85;
+}
+
+.panel[open] > summary::after {
+  content: "▴";
+}
+
+.panel-body {
+  padding: 12px 14px 16px;
+  color: #ff6b6b;
+}
+
+.panel-body p {
+  line-height: 1.5;
+}
+
+/* =========================
+   Process list spacing
+   ========================= */
+
+.process-list {
+  margin: 0 0 0 1.2rem;
+  padding: 0;
+}
+
+.process-list > li {
+  margin: 0 0 18px;
+}
+
+.process-list h3 {
+  margin: 0 0 8px;
+  color: #ff2b2b;
+  font-size: 1.15rem;
+}
+
+/* =========================
+   Image Pair Layout
+   ========================= */
+
+.image-pair,
+.image-single {
+  display: grid;
+  gap: 16px;
+  margin-top: 12px;
+}
+
+/* Paired layout = 2 columns */
+.image-pair {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.image-card {
+    min-width: 0;
+}
+
+/* Single layout = 1 column */
+.image-single {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+/* Make a single image-card match the width of one column in image-pair */
+.image-single .image-card {
+  max-width: 492px;     /* approx (1000 - 16 gap) / 2 */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+
+.image-card {
+  padding: 12px;
+  border: 1px solid rgba(255, 107, 107, 0.18);
+  border-radius: 10px;
+}
+
+.image-card h3 {
+    margin: 0 0 12px;
+    color: #ff2b2b;
+    font-size: 1.15rem;
+}
+
+/* =========================
+   Click-to-Fullscreen Figures
+   ========================= */
+/* Match container width */
+.image-pair,
+.image-single {
+  max-width: 1000px;   /* use whatever your paired layout uses */
+  margin: 1.5rem auto;
+}
+
+/* Force Consistent Image Behavior */
+.entry-image img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* For Visual Consistency on Screenshots */
+.entry-image.summary-16x9 summary img {
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+.entry-image {
+  margin: 10px 0 0;
+}
+
+.entry-image details > summary {
+  cursor: zoom-in;
+}
+
+/* Make the thumbnail look clean and constrained */
+.entry-image summary img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 107, 107, 0.20);
+}
+
+/* figcaption style */
+.entry-image figcaption {
+  margin-top: 8px;
+  color: #ff6b6b;
+  font-size: 0.98rem;
+  line-height: 1.35;
+}
+
+/* Fullscreen overlay container (works when details[open]) */
+.entry-image details[open] .fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  padding: 24px;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.85);
+  cursor: zoom-out;
+}
+
+/* Fullscreen image sizing */
+.entry-image details[open] .fullscreen img {
+  max-width: min(1100px, 92vw);
+  max-height: 86vh;
+  width: auto;
+  height: auto;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 107, 107, 0.28);
+}
+
+/* On small screens, stack image-pair */
+@media (max-width: 800px) {
+  .image-pair,
+  .image-single {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Close button for fullscreen overlay */
+.fs-close {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 10000;
+  font-size: 2rem;
+  line-height: 1;
+  padding: 6px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 107, 107, 0.35);
+  background: rgba(11, 29, 58, 0.75);
+  color: #ff6b6b;
+  cursor: pointer;
+}
+
+/* Make sure the overlay receives taps/clicks */
+.entry-image details[open] .fullscreen {
+  pointer-events: auto;
 }
       
 

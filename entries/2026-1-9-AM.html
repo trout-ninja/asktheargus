@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>2026-1-9-AM -- Story Time </title>
+<link rel="canonical" href="https://www.asktheargus.com/entries/2026-1-9-AM.html" />
+  
+  <style>
+    body { margin:0; padding:24px; font-family:serif; background:#0b1d3a; color:#ff6b6b; line-height:1.6; }
+    .frame { padding:26px; border:14px solid transparent; border-radius:10px; max-width:900px; margin:0 auto;
+      border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Cg fill='none' stroke='%23ff2b2b' stroke-width='4' stroke-linecap='round'%3E%3Cpath d='M8 16c8 0 8-8 16-8s8 8 16 8 8-8 16-8'/%3E%3Cpath d='M8 48c8 0 8 8 16 8s8-8 16-8 8 8 16 8'/%3E%3Cpath d='M16 8c0 8-8 8-8 16s8 8 8 16-8 8-8 16'/%3E%3Cpath d='M48 8c0 8 8 8 8 16s-8 8-8 16 8 8 8 16'/%3E%3C/g%3E%3C/svg%3E") 20 round;
+    }
+    a { color:#d36a1e; text-decoration:none; border-bottom:1px solid rgba(211,106,30,.5); }
+    a:hover { color:#ff2b2b; border-bottom-color:#ff2b2b; }
+    h1 { color:#ff2b2b; margin:0; font-size:2.6rem; }
+    .meta { margin-top:.25rem; opacity:.9; }
+    h2 { color:#ff2b2b; margin-top:2rem; }
+    ul { margin: .5rem 0 0 1.2rem; }
+    .tagbox { margin-top:1rem; padding:14px; border:1px solid rgba(255,107,107,.25); border-radius:8px; }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <p><a href="../index.html">&larr; Back to Home</a></p>
+
+    <h1></h1>
+    <div class="meta">2026-1-9-AM</div>
+
+    <h2>What I Worked On</h2>
+      <!-- Write your entry here -->
+<p>I felt as though I was losing all momentum by looking back so hard, but the further I looked, the more it became clear I needed to revisit the fundamentals and understand how exactly a computer starts itself and maintains that functioning state. It is my belief that if I can do that, mastery will come more naturally.</p>
+
+<p>I ran into the question of <i>how</i>. How am I supposed to retain information that feels so dry? How am I supposed to memorize interconnected, layered material without it turning into fog?</p>
+
+<p>I spent a good portion of the day at work trying to figure that out. I am pleased to say I came up with a solution—almost by accident. I asked Shevek to tell me a story to kill time, and when I finished reading it, I had a realization: the story sounded like it was describing the scheduler… as a metaphor… through parable. What the frick?</p>
+
+<p>And it stuck. I should have no problem remembering that the scheduler is a fundamental piece of the puzzle that makes all things possible by answering: <q>Who gets to exist now?</q></p>
+
+<p>I tried to see how far I could push these parables and this method of learning. It was highly effective for concepts I had exposure to, but limited understanding of. I’ve attached them here and will be using this method more in the future—archiving them as well. I hope you enjoy reading them as much as I did. I hope you find them helpful as well. (I later found Shevek did <b>not</b> copy those files into <code>.txt</code> in their entirety. I will be moving forward.)</p>
+
+<p>I am also inspired and excited to say I had Shevek make me some new sandboxes. One is designed to create a few different simulated failures at boot. I will be chipping away at that, as well as a few bugs in my webpage, this weekend.</p>
+
+<p>I also had him make me a sandbox that simulates a different bug for each directory, which I have attached at the bottom of this page.</p>
+
+<p>I started the lab for processes and process tools. I wasn’t sure what I was looking at, so I asked Shevek. The best synopsis is this:</p>
+
+<h3>The Correct Mental Model (This Is the Lesson)</h3>
+<ul>
+  <li><b>CPU hog</b> &rarr; who is thinking</li>
+  <li><b>Memory hog</b> &rarr; who is remembering</li>
+  <li><b>I/O writer</b> &rarr; who is persisting</li>
+</ul>
+<p>The scheduler juggles all three pressures.</p>
+
+<p>I continued with the lab. Again, I hit hiccups; there were no mock PID files to interpret. I consulted Shevek. He said there is a way around that, but at this point, I’m seeing the most value in simply having him answer the questions and using the tools in the guided exercises.</p>
+
+<p>I learned about <code>pgrep</code> for the first time and read the man page on it. It sounds like it could be a highly effective tool down the line:</p>
+
+<pre><code>DESCRIPTION
+pgrep looks through the currently running processes and lists the process IDs
+which match the selection criteria to stdout.</code></pre>
+
+<p>I had Shevek make me a “pregp” sandbox, which I have also attached to the bottom of this page.</p>
+
+<p>I went to bed feeling like I’d lost all steam. I woke up, revisited the lab, and made the PID directories to see how the lab is <i>supposed</i> to unfold and what lesson it is trying to teach. I’m grateful I did. I learned a little bit more about <code>pgrep</code>:</p>
+
+<blockquote>
+  <p>You just uncovered a boundary:</p>
+  <ul>
+    <li><b>grep</b> &rarr; passive text filter</li>
+    <li><b>pgrep</b> &rarr; active process matcher</li>
+  </ul>
+  <p>That distinction is foundational in Unix thinking.</p>
+  <p><q>Processes are not files. They can be represented as text, but they are not text.</q></p>
+  <p>Once you internalize that, tools start making sense instead of feeling arbitrary.</p>
+</blockquote>
+
+<p>As I went back further in the lesson plan for review, I began to realize I don’t really understand the difference in application between <code>ps</code> and <code>top</code>. I consulted Shevek for clarification:</p>
+
+<h3>The Short, Correct Answer</h3>
+<p><code>ps</code> is a snapshot.<br>
+<code>top</code> is a movie.<br>
+They look similar, but they serve different mental jobs.</p>
+
+<p>He went on to clarify the situations in which <code>ps</code> or <code>top</code> might be used:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Question</th>
+      <th>Tool</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>“What processes exist?”</td>
+      <td><code>ps</code></td>
+    </tr>
+    <tr>
+      <td>“Which one is dominating right now?”</td>
+      <td><code>top</code></td>
+    </tr>
+    <tr>
+      <td>“Who spawned this?”</td>
+      <td><code>ps</code></td>
+    </tr>
+    <tr>
+      <td>“Why does the system feel sluggish?”</td>
+      <td><code>top</code></td>
+    </tr>
+    <tr>
+      <td>“Give me data for a script”</td>
+      <td><code>ps</code></td>
+    </tr>
+    <tr>
+      <td>“Let me watch behavior”</td>
+      <td><code>top</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>But what about <code>pgrep</code>, I wondered? When do I use that? As I read further, Shevek already had the answer prepared:</p>
+
+<h3>How They Work Together (Real-World Workflow)</h3>
+<ol>
+  <li>
+    Use <code>top</code> to notice something weird
+    <ul>
+      <li>“Why is this process always at the top?”</li>
+    </ul>
+  </li>
+  <li>
+    Use <code>ps</code> to inspect it precisely
+    <ul>
+      <li><code>PPID</code></li>
+      <li><code>STAT</code></li>
+      <li>arguments</li>
+    </ul>
+  </li>
+  <li>Use <code>pgrep</code>/<code>pkill</code> to act</li>
+</ol>
+
+<p><code>top</code> finds the problem.<br>
+<code>ps</code> explains it.<br>
+<code>pgrep</code>/<code>pkill</code> acts.</p>
+
+<p>The lab guided me to put in a long command that I wasn’t particularly familiar with but was, at that point, able to effectively decipher:</p>
+
+<pre><code>cat /proc/$PID/cmdline | tr '\0' ' ' ; echo</code></pre>
+
+<p>What the heck is that? Shevek explained that its results show me the argument vector. Well, what’s an argument vector? Shevek explained:</p>
+
+<h3>One sentence you should remember</h3>
+<p>An argument vector is the exact list of strings the kernel hands to a program when it starts, and that list defines the program’s identity. Everything else—flags, config, behavior—flows from that.</p>
+
+<p>He went on to make a chart that helps me decipher the results:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Position in output</th>
+      <th>argv index</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>cpu_hog_1</code></td>
+      <td><code>argv[0]</code></td>
+      <td>Process name / self-identity</td>
+    </tr>
+    <tr>
+      <td><code>/home/jsluiter/.../cpu_hog.py</code></td>
+      <td><code>argv[1]</code></td>
+      <td>Script or executable</td>
+    </tr>
+    <tr>
+      <td><code>--seconds</code></td>
+      <td><code>argv[2]</code></td>
+      <td>Flag</td>
+    </tr>
+    <tr>
+      <td><code>1000000</code></td>
+      <td><code>argv[3]</code></td>
+      <td>Flag value</td>
+    </tr>
+    <tr>
+      <td><code>--log</code></td>
+      <td><code>argv[4]</code></td>
+      <td>Flag</td>
+    </tr>
+    <tr>
+      <td><code>/home/jsluiter/.../app.log</code></td>
+      <td><code>argv[5]</code></td>
+      <td>Flag value</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>So, <code>/proc/$PID/cmdline</code> is exposing the kernel’s internal raw data. I am grateful I reviewed the lab. There is much I am unaware of.</p>
+
+<p>I continued and ran into another command that gave me strange output:</p>
+
+<pre><code>cat /proc/$PID/stat</code></pre>
+
+<p>It resulted in a string of large numbers I can’t even imagine how to decipher. I consulted with Shevek, and he made me a chart for reference, as well as one with some other helpful commands:</p>
+
+<h3>Selected fields in <code>/proc/$PID/stat</code></h3>
+<table>
+  <thead>
+    <tr>
+      <th>Field #</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><td>PID</td></tr>
+    <tr><td>2</td><td>comm (process name, in parentheses)</td></tr>
+    <tr><td>3</td><td>state (R, S, D, Z, etc.)</td></tr>
+    <tr><td>4</td><td>PPID (parent PID)</td></tr>
+    <tr><td>5</td><td>process group ID</td></tr>
+    <tr><td>6</td><td>session ID</td></tr>
+    <tr><td>7</td><td>controlling terminal</td></tr>
+    <tr><td>14</td><td>utime (time spent in user mode)</td></tr>
+    <tr><td>15</td><td>stime (time spent in kernel mode)</td></tr>
+    <tr><td>18</td><td>priority</td></tr>
+    <tr><td>19</td><td>nice</td></tr>
+    <tr><td>22</td><td>starttime (since boot, in jiffies)</td></tr>
+    <tr><td>23</td><td>vsize (virtual memory size)</td></tr>
+    <tr><td>24</td><td>rss (resident set size — real RAM)</td></tr>
+  </tbody>
+</table>
+
+<h3>Quick reference: what these proc files represent</h3>
+<table>
+  <thead>
+    <tr>
+      <th>File</th>
+      <th>What it represents</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>/proc/$PID/cmdline</code></td>
+      <td>Identity (how the process was invoked)</td>
+    </tr>
+    <tr>
+      <td><code>/proc/$PID/environ</code></td>
+      <td>Context (environment variables)</td>
+    </tr>
+    <tr>
+      <td><code>/proc/$PID/stat</code></td>
+      <td>Existence (what the kernel is tracking right now)</td>
+    </tr>
+  </tbody>
+</table>
+
+      <h2>Skills Learned</h2>
+    <div class="tagbox">
+      <ul>
+        <li>Employ Stories to Understand Layered Concepts</li>
+        <li>Time is an illusion for the computer</li>
+        <li>/proc Magic</li>
+      </ul>
+    </div>
+
+    <h2>Notes / Next Steps</h2>
+    <ul>
+      <li>Spend the next few days studying until I understand the system better</li>
+      <li></li>
+      <li></li>
+    </ul>
+    <h2>Shevek's Daily Haiku</h2>
+    <p>Looking back, I stall—
+Stories teach the kernel’s breath,
+Time decides who runs.</p>
+    <h2>Todays Sandboxes</h2>
+    <ul>
+        <li><a href="https://github.com/trout-ninja/asktheargus/releases/download/lfs207_S">Shevek4</a></li>
+        <li><a href="https://github.com/trout-ninja/asktheargus/releases/download/boot_loader_lesson_v1.0.0/bootloader_sandbox.zip">Shevek5</a></li>
+        <li><a href="https://github.com/trout-ninja/asktheargus/releases/download/Ps_and_top_sandbox_v1.0.0/process_top_ps_proc_sandbox.zip">Shevek6</a></li>
+    </ul>
+     </div>
+</body>
+</html>
