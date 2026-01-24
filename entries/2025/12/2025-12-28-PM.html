@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>2025-12-28-PM - Coding from Morning till Night!</title>
+<link rel="canonical" href="https://www.asktheargus.com/entries//2025/12/2025-12-28-PM.html" />
+  
+  <style>
+    body { margin:0; padding:24px; font-family:serif; background:#0b1d3a; color:#ff6b6b; line-height:1.6; }
+    .frame { padding:26px; border:14px solid transparent; border-radius:10px; max-width:900px; margin:0 auto;
+      border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Cg fill='none' stroke='%23ff2b2b' stroke-width='4' stroke-linecap='round'%3E%3Cpath d='M8 16c8 0 8-8 16-8s8 8 16 8 8-8 16-8'/%3E%3Cpath d='M8 48c8 0 8 8 16 8s8-8 16-8 8 8 16 8'/%3E%3Cpath d='M16 8c0 8-8 8-8 16s8 8 8 16-8 8-8 16'/%3E%3Cpath d='M48 8c0 8 8 8 8 16s-8 8-8 16 8 8 8 16'/%3E%3C/g%3E%3C/svg%3E") 20 round;
+    }
+    a { color:#d36a1e; text-decoration:none; border-bottom:1px solid rgba(211,106,30,.5); }
+    a:hover { color:#ff2b2b; border-bottom-color:#ff2b2b; }
+    h1 { color:#ff2b2b; margin:0; font-size:2.6rem; }
+    .meta { margin-top:.25rem; opacity:.9; }
+    h2 { color:#ff2b2b; margin-top:2rem; }
+    ul { margin: .5rem 0 0 1.2rem; }
+    .tagbox { margin-top:1rem; padding:14px; border:1px solid rgba(255,107,107,.25); border-radius:8px; }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <p><a href="../../../index.html">&larr; Back to Home</a></p>
+
+    <h1>Coding from Morning till Night!</h1>
+    <div class="meta">2025-12-28-PM</div>
+
+    <h2>What I Worked On</h2>
+      <!-- Write your entry here -->
+    <p> Today I spent the morning and afternoon continuing my LFS207. This section covered an introduction to GIT, which, interestingly enough, Shevek had me tinkering with yesterday… all day… and all night. I’m grateful for the opportunity to have a little bit more formal clarity shed on the subject. I can only hope the course provides me a clearer understanding.</p>
+
+<p>One thing that needed re-emphasis from Shevek was that my virtual machine is ALWAYS independent of the actual file system, and that I was safe to modify Git configurations in the VM. This reinforced the importance of environment isolation—an idea that continues to surface.</p>
+
+<p>I encountered some confusion on the LFS207 course material regarding how to set up “minimal global configuration” for Git. The last command listed was obscure: git config --global init.defaultBranch main. I consulted Shevek and, as is always the case with asking to many questions, I got to much of an answer. The only reason this command exists is historically the branch was named “master”. All this command does is define the default branch name for newly initialized repositories, replacing the historical default of “master”. I wonder, how complex of a task would it be to modify this, and why is it still this way. But I will spare Shevek this question.</p>
+
+<p>Again I notice an inconsistency in LFS207: a file to be copied to my repository doesn’t exist: should it? Why doesn’t it? I implore Shevek. And again, the answer regards classical construction versus modern construction. /etc/motd existed originally as “Message of the Day” in older systems. Modern systems generate the message dynamically rather than relying on a static file. I stopped myself from getting distracted further, created the file, and continued the lesson.</p>
+
+<p>The hour or so passes of processing before the lesson concludes. Now is when things get interesting. To prepare myself, I’m going to have Shevek make me a sandbox with users, groups, package management systems and I’m curious to see how he integrates Git into my lesson plan. I’ll start it tonight, but likely finish it tomorrow. First, I just have to remember how to scp files from my actual machine to my virtual machine...</p>
+
+    <h2>Skills Learned</h2>
+    <div class="tagbox">
+      <ul>
+        <li>Github fundamentals</li>
+        <li>Interesting configuration history</li>
+        <li>A clearer understanding of repositories</li>
+      </ul>
+    </div>
+
+    <h2>Notes / Next Steps</h2>
+    <ul>
+      <li>Have Shevek make me a lab</li>
+      <li>Work that lab until I know it like scripture</li>
+    </ul>
+  </div>
+</body>
+</html>
+

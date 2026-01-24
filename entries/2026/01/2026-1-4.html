@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>2026-1-4 -- Making Hind Sight Irrelevant</title>
+<link rel="canonical" href="https://www.asktheargus.com/entries/2026/01/2026-1-4.html" />
+  
+  <style>
+    body { margin:0; padding:24px; font-family:serif; background:#0b1d3a; color:#ff6b6b; line-height:1.6; }
+    .frame { padding:26px; border:14px solid transparent; border-radius:10px; max-width:900px; margin:0 auto;
+      border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Cg fill='none' stroke='%23ff2b2b' stroke-width='4' stroke-linecap='round'%3E%3Cpath d='M8 16c8 0 8-8 16-8s8 8 16 8 8-8 16-8'/%3E%3Cpath d='M8 48c8 0 8 8 16 8s8-8 16-8 8 8 16 8'/%3E%3Cpath d='M16 8c0 8-8 8-8 16s8 8 8 16-8 8-8 16'/%3E%3Cpath d='M48 8c0 8 8 8 8 16s-8 8-8 16 8 8 8 16'/%3E%3C/g%3E%3C/svg%3E") 20 round;
+    }
+    a { color:#d36a1e; text-decoration:none; border-bottom:1px solid rgba(211,106,30,.5); }
+    a:hover { color:#ff2b2b; border-bottom-color:#ff2b2b; }
+    h1 { color:#ff2b2b; margin:0; font-size:2.6rem; }
+    .meta { margin-top:.25rem; opacity:.9; }
+    h2 { color:#ff2b2b; margin-top:2rem; }
+    ul { margin: .5rem 0 0 1.2rem; }
+    .tagbox { margin-top:1rem; padding:14px; border:1px solid rgba(255,107,107,.25); border-radius:8px; }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <p><a href="../../../index.html">&larr; Back to Home</a></p>
+
+    <h1></h1>
+    <div class="meta">2026-1-4</div>
+
+    <h2>What I Worked On</h2>
+      <!-- Write your entry here -->
+<p>I don’t care to divulge too much personal information; it distracts from my intentions as a writer. But I must admit, I have an incredibly slow job where crises do arise, but only incrementally at best. I spent the entire shift studying code games on the Sololearn app. I’m sure there are much better resources, but I wanted a crash course, and it seems sufficient in all aspects. I completed the Coding Foundations course and started the Python Development course.</p> <p>I daydreamed about my drone and the arrival of my breadboard supplies so I could begin learning through application. I arrived home disappointed to find the items still had not arrived. I immediately began the <code>ulimit</code> lab Shevek had made for me that morning—you can find it in the sandbox archives.</p> <p>As I crawled through the <code>ulimit</code> lab, I felt validated in my decision to do so. LFS207 only skimmed most of these concepts. Here, I was actually implementing them in preparation for the exam. At the same time, I worried that I might be losing momentum. Perhaps exposure now and details later is the better approach? I don’t want to take chances. The course and certificate cost over $650, and the certification is contingent upon passing. There’s pressure to perform, but no clear direction. Today, I think I’ll begin researching what to expect on the exam—though I don’t want to prepare *only* for a test. I want to be competent.</p> <p>One question from the lesson plan Shevek prepared stood out in particular: <i>“Where do defaults come from?”</i> It initially felt as though Shevek was hallucinating my ability to make the mental leap required to answer it—as if my brain were somehow connected to the internet. Needless to say, the answer was eye-opening, albeit not covered by LFS207 at this stage.</p> <p>Systemd sets the defaults. PAM enforces additional rules. The shell inherits these limits but can modify them per session—and only temporarily. All of these parameters live in directories that could theoretically be modified. Good to know.</p> <p>I took a peek at <code>/etc/systemd/system.conf</code> and wondered what it all meant. I consulted Shevek. He explained that systemd still has factory defaults, and this file exists to override them—which is why everything is commented out. That realization alone was worth the detour.</p> <p>While working through lab 14.5 in LFS207, I ran into an unexpected issue. First, I had to install the <code>at</code> program; it didn’t come with the Rocky Linux package. Second, I couldn’t even use it because the system reported:</p> <p><i>“Can't open /var/run/atd.pid to signal atd. No atd running?”</i></p> <p>What the hell does that mean? I consulted Shevek again. He explained that many people never use <code>at</code>, so the <code>atd</code> daemon is never activated by default. I would have to start it myself—so I did. I also enabled it at boot.</p> <p>I then moved on to the next section of LFS207: Process Monitoring. This section looks intimidating. There are countless commands and options—so many that I already see another sandbox in my future. <code>top</code>, in particular, looks both powerful and overwhelming. I expect we’ll become well acquainted.</p> <p>The <code>/proc</code> filesystem was introduced to me for the first time. From what I can tell, it contains an enormous amount of useful information. While part of me wants to push forward with the course, my curiosity—and desire for mastery—keeps pulling me sideways.</p> <p>After LFS207 listed a host of options for the <code>ps</code> command, the very next page offered something far more valuable than any flag list:</p> <p><b>Basic Troubleshooting Techniques</b></p> <ul> <li>Characterize the problem</li> <li>Reproduce the problem</li> <li>Always try the easy thing first</li> <li>Eliminate possible causes one at a time</li> <li>Change only one thing at a time; if it doesn’t fix the problem, change it back</li> <li>Check the system logs for further information</li> </ul> <p>Even if I never memorize every command and all its options, this distills to a single truth:</p> <p><b>Knowing how the system works is more important than all the code in the world.</b></p> <p>With that in mind, I decided it was time to revisit the bootloader process and the structure of the filesystem. I had Shevek create an interactive sandbox that walks through the bootloader process, which I’ve attached at the bottom of this page.</p> <p>I also had Shevek create another sandbox that guides me through the directory hierarchy and its logic. That’s attached below as well.</p> <p>Finally, I asked Shevek to build a sandbox covering <code>ps</code>, <code>top</code>, troubleshooting, the <code>/proc</code> directory, log inspection, and background processes. It’s extensive and very specific—but specificity always matters when working with AI. That lab is attached at the bottom of this page.</p> <p>All in all, it was quite an evening—and an early morning. I’ve got my work cut out for me over the next day or two, that’s for sure.</p>
+      <h2>Skills Learned</h2>
+    <div class="tagbox">
+      <ul>
+        <li>Stacking limits and recursion</li>
+        <li>Systemd and default settings</li>
+        <li>The difference between at and atd</li>
+      </ul>
+    </div>
+
+    <h2>Notes / Next Steps</h2>
+    <ul>
+      <li>Spend the next few days studying until I understand the system better</li>
+      <li>Move on in LFS207</li>
+      <li>Maintain excitement for electronics in the mail</li>
+    </ul>
+    <h2>Shevek's Daily Haiku</h2>
+    <p>Slow clock, steady hands—
+limits lift, defaults reveal paths,
+systems wake to thought.</p>
+    <h2>Todays Sandboxes</h2>
+    <ul>
+        <li><a href="https://github.com/trout-ninja/asktheargus/releases/download/lfs207_S">Shevek4</a></li>
+        <li><a href="https://github.com/trout-ninja/asktheargus/releases/download/boot_loader_lesson_v1.0.0/bootloader_sandbox.zip">Shevek5</a></li>
+        <li><a href="https://github.com/trout-ninja/asktheargus/releases/download/Ps_and_top_sandbox_v1.0.0/process_top_ps_proc_sandbox.zip">Shevek6</a></li>
+    </ul>
+     </div>
+</body>
+</html>

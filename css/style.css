@@ -199,6 +199,18 @@ a.zoomable img {
     padding: 12px;
   }
 
+@media (max-width: 900px) {
+  .image-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .image-grid {
+    grid-template-columns: 1fr;
+  }
+}
+  
   .frame {
     padding: 12px;
     border-width: 10px;
@@ -364,6 +376,13 @@ a.zoomable img {
 .image-single {
     grid-template-columns: minmax(0, 1fr);
 }
+
+.image-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
 
 /* Make a single image-card match the width of one column in image-pair */
 .image-single .image-card {

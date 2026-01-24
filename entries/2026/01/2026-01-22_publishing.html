@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Website Testing and Publishing</title>
+
+    <link rel="canonical" href="https://www.asktheargus.com/entries/2026/01/2026-1-22_publishing" />
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+
+  <!-- Script for Clicking out of Images -->
+  <script>
+    window.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll(".entry-image details").forEach((details) => {
+        const overlay = details.querySelector(".fullscreen");
+        const closeBtn = details.querySelector(".fs-close");
+        const fullImg = overlay ? overlay.querySelector("img") : null;
+
+        if (!overlay) return;
+
+        if (closeBtn) {
+          closeBtn.addEventListener("pointerdown", (e) => {
+            e.preventDefault();
+            details.removeAttribute("open");
+          });
+        }
+
+        overlay.addEventListener("pointerdown", (e) => {
+          if (fullImg && e.target === fullImg) return;
+          details.removeAttribute("open");
+        });
+      });
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key !== "Escape") return;
+        document.querySelectorAll(".entry-image details[open]").forEach((d) => {
+          d.removeAttribute("open");
+        });
+      });
+    });
+  </script>
+
+  <body>
+    <main class="entry-page">
+
+      <!-- Title / Subtitle -->
+      <header class="entry-top">
+        <a href="../../../index.html">&larr; Back to Home</a>
+        <p class="site-title">Ask the Argus</p>
+        <h1 class="entry-title">Python Test Servers and GitHub</h1>
+        <p class="entry-subtitle">The Process for Testing and Publishing</p>
+      </header>
+
+      <!-- Synopsis -->
+      <section class="synopsis">
+        <h2>Synopsis</h2>
+        <p>In this entry I document the process of running a python server to test run any recent updates to my website. After that, I list the process for uploading these changes to GitHub. I also explore the mechanics of what is going on in this process.</p>
+      </section>
+
+      <!-- Collapsible Sections -->
+      <section class="entry-sections" aria-label="Expandable sections">
+
+        <!-- Questions -->
+        <details class="panel" id="questions">
+          <summary>Questions &amp; Objectives</summary>
+          <div class="panel-body">
+            <ol class="process-list">
+              <li>I want to test my site updates before I run them on GitHub to identify any bugs.</li>
+              <li>I also reindex with pagefind so any searches remain relevant.</li>
+              <li>Next, I want to publish those updates onto GitHub.</li>
+            </ol>
+          </div>
+        </details>
+
+        <!-- Process -->
+        <details class="panel" id="process">
+          <summary>Process</summary>
+          <div class="panel-body">
+            <ol class="process-list">
+
+              <!-- Step 1 -->
+            <ol>
+             <li>
+                 <p><strong>I first open up a python server. But what does this mean exactly?</strong> At some point I had a bout of confusion. As it turns out, the command <code>python3 -m http.server 8000</code> when employed in a specific directory, acts as a host for that directory. It took me days to remember doing this.</p>
+                 
+                <!--- Iimage 1.1 --->
+                <section class="image-grid">
+                <div class="image-card">
+                    <h3>Python Server Explained 1</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-22_testing_and_publishing/Fig_1-1.png" alt="Python Server Explained 1" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-22_testing_and_publishing/Fig_1-1.png" alt="Python Server Explained 1" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+            
+                <!--- Image 1.2 --->
+                <div class="image-card">
+                    <h3>Python Server Explained 2</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-22_testing_and_publishing/Fig_1-2.png" alt="Python Server Explained 2" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-22_testing_and_publishing/Fig_1-2.png" alt="Python Server Explained 2" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+                
+                <!--- Image 1.3 --->
+                <div class="image-card">
+                    <h3>Python Server Explained 3</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-22_testing_and_publishing/Fig_1-3.png" alt="Python Server Explained 3" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-22_testing_and_publishing/Fig_1-3.png" alt="Python Server Explained 3" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Image 1.4 --->
+                <div class="image-card">
+                    <h3>Python Server Explained 4</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-22_testing_and_publishing/Fig_1-4.png" alt="Python Server Explained 4" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-22_testing_and_publishing/Fig_1-4.png" alt="Python Server Explained 4" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+            
+                <!--- Image 1.5 --->
+                <div class="image-card">
+                    <h3>Python Server Explained 5</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-22_testing_and_publishing/Fig_1-5.png" alt="Python Server Explained 5" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-22_testing_and_publishing/Fig_1-5.png" alt="Python Server Explained 5" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Image 1.6 --->
+                <div class="image-card">
+                    <h3>Python Server Explained 5</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-22_testing_and_publishing/Fig_1-6.png" alt="Python Server Explained 6" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-22_testing_and_publishing/Fig_1-6.png" alt="Python Server Explained 6" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>                
+            </li>
+              
+              <!--- Step 2 --->
+              <li>  
+              <p><strong>I type the python server command and type the "server" address into my browser to verify there aren't any bugs, and everything appears fine.</strong></p>
+                
+              <!--- Image 2.1 --->
+                <section class="image-grid">
+                <div class="image-card">
+                    <h3>Setting up the Python Browser</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-22_testing_and_publishing/Fig_2-1.png" alt="Python Server Command" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-22_testing_and_publishing/Fig_2-1.png" alt="Python Server Command" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+            
+                <!--- Image 2.2 --->
+                <div class="image-card">
+                    <h3>Linking my Browser Up</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-22_testing_and_publishing/Fig_2-2.png" alt="Linking Up" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-22_testing_and_publishing/Fig_2-2.png" alt="Linking Up" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+                
+                <!--- Image 2.3 --->
+                <div class="image-card">
+                    <h3>Verifying the Page</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-22_testing_and_publishing/Fig_2-3.png" alt="Browser Test" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-22_testing_and_publishing/Fig_2-3.png" alt="Browser Test" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+              </li>
+
+              <!--- Step 3 --->
+              <li>
+                 <p><strong>Shevek makes me a guide for indexing my page with pagefind and updating to GitHub.</strong></p>
+                 
+                <!--- Iimage 3.1 --->
+                <section class="image-grid">
+                <div class="image-card">
+                    <h3>Pagefind Indexing Explained 1</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-22_testing_and_publishing/Fig_3-1.png" alt="Pagefind Indexing Explained 1" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-22_testing_and_publishing/Fig_3-1.png" alt="Pagefind Indexing Explained 1" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+            
+                <!--- Image 3.2 --->
+                <div class="image-card">
+                    <h3>Pagefind Indexing Explained 2</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-22_testing_and_publishing/Fig_3-2.png" alt="Pagefind Indexing Explained 2" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-22_testing_and_publishing/Fig_3-2.png" alt="Pagefind Indexing Explained 2" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+                
+                <!--- Image 3.3 --->
+                <div class="image-card">
+                    <h3>Pagefind Indexing Explained 3</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-22_testing_and_publishing/Fig_3-3.png" alt="Pagefind Indexing Explained 3" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-22_testing_and_publishing/Fig_3-3.png" alt="Pagefind Indexing Explained 3" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Image 3.4 --->
+                <div class="image-card">
+                    <h3>Pagefind Indexing Explained 4</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-22_testing_and_publishing/Fig_3-4.png" alt="Pagefind Indexing Explained 4" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-22_testing_and_publishing/Fig_3-4.png" alt="Pagefind Indexing Explained 4" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+            
+                <!--- Image 3.5 --->
+                <div class="image-card">
+                    <h3>Pagefind Indexing Explained 5</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-22_testing_and_publishing/Fig_3-5.png" alt="Pagefind Indexing Explained 5" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-22_testing_and_publishing/Fig_3-5.png" alt="Pagefind Indexing Explained 5" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Image 3.6 --->
+                <div class="image-card">
+                    <h3>Pagefind Indexing Explained 6</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-22_testing_and_publishing/Fig_3-6.png" alt="Pagefind Indexing Explained 6" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-22_testing_and_publishing/Fig_3-6.png" alt="Pagefind Indexing Explained 6" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>                
+           
+                <!--- Image 3.7 --->
+                <div class="image-card">
+                    <h3>Pagefind Indexing Explained 7</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-22_testing_and_publishing/Fig_3-7.png" alt="Pagefind Indexing Explained 7" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-22_testing_and_publishing/Fig_3-7.png" alt="Pagefind Indexing Explained 7" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>       
+
+
+              </li>
+
+              <!--- Step 4 --->
+               <li>  
+              <p><strong>Lastly I ask Shevek to guide me through making updates to GitHub.</strong> I make all the necessary upadtes to my Index page and sitemap etc. as well before proceeding.</p>
+               
+              <!--- Image 4.1 --->
+                <div class="image-card">
+                    <h3>GitHub Update 1</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-22_testing_and_publishing/Fig_4-1.png" alt="GitHub 1" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-22_testing_and_publishing/Fig_4-1.png" alt="GitHub 1" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+                <!--- Image 4.2 --->
+                 <div class="image-card">
+                    <h3>GitHub Update 2</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-22_testing_and_publishing/Fig_4-2.png" alt="GitHub 2" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-22_testing_and_publishing/Fig_4-2.png" alt="GitHub 2" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+              <!--- Image 4.3 --->
+                <div class="image-card">
+                    <h3>GitHub Update 3</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-22_testing_and_publishing/Fig_4-3.png" alt="GitHub 3" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-22_testing_and_publishing/Fig_4-3.png" alt="GitHub 3" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+                <!--- Image 4.4 --->
+                 <div class="image-card">
+                    <h3>GitHub Update 4</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-22_testing_and_publishing/Fig_4-4.png" alt="GitHub 4" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-22_testing_and_publishing/Fig_4-4.png" alt="GitHub 4" />
+                            </div>
+                        </details>
+                    </figure>
+                </div> 
+
+              <!--- Image 4.5 --->
+                <div class="image-card">
+                    <h3>GitHub Update 5</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-22_testing_and_publishing/Fig_4-5.png" alt="GitHub 5" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-22_testing_and_publishing/Fig_4-5.png" alt="GitHub 5" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+                <!--- Image 4.6 --->
+                 <div class="image-card">
+                    <h3>GitHub Update 6</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-22_testing_and_publishing/Fig_4-6.png" alt="GitHub 6" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-22_testing_and_publishing/Fig_4-6.png" alt="GitHub 6" />
+                            </div>
+                        </details>
+                    </figure>
+                </div> 
+                </li>
+
+            </ol>
+          </div>
+        </details>
+
+        <!-- Conclusions -->
+        <details class="panel" id="conclusions">
+          <summary>Conclusions</summary>
+          <div class="panel-body">
+            <p>The exact process for testing and publishing the webpage is: edit, test on python server, index with pagefind, update on GitHub. Some particularly important areas worth noting are when creating the python server, it acts as a host for whatever directory the command is set in.</p>
+          </div>
+        </details>
+
+        <!-- Haiku -->
+        <details class="panel" id="haiku">
+          <summary>Shevek's Haiku</summary>
+          <div class="panel-body">
+            <p></p>
+          </div>
+        </details>
+
+      </section>
+    </main>
+  </body>
+</html>
+

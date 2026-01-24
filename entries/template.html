@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title></title>
+
+    <link rel="canonical" href="" />
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+
+  <!-- Script for Clicking out of Images -->
+  <script>
+    window.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll(".entry-image details").forEach((details) => {
+        const overlay = details.querySelector(".fullscreen");
+        const closeBtn = details.querySelector(".fs-close");
+        const fullImg = overlay ? overlay.querySelector("img") : null;
+
+        if (!overlay) return;
+
+        if (closeBtn) {
+          closeBtn.addEventListener("pointerdown", (e) => {
+            e.preventDefault();
+            details.removeAttribute("open");
+          });
+        }
+
+        overlay.addEventListener("pointerdown", (e) => {
+          if (fullImg && e.target === fullImg) return;
+          details.removeAttribute("open");
+        });
+      });
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key !== "Escape") return;
+        document.querySelectorAll(".entry-image details[open]").forEach((d) => {
+          d.removeAttribute("open");
+        });
+      });
+    });
+  </script>
+
+  <body>
+    <main class="entry-page">
+
+      <!-- Title / Subtitle -->
+      <header class="entry-top">
+        <a href="../../../index.html">&larr; Back to Home</a>
+        <p class="site-title">Ask the Argus</p>
+        <h1 class="entry-title">Python Test Servers and GitHub</h1>
+        <p class="entry-subtitle">The Process for Testing and Publishing</p>
+      </header>
+
+      <!-- Synopsis -->
+      <section class="synopsis">
+        <h2>Synopsis</h2>
+        <p>In this entry I document the process of running a python server to test run any recent updates to my website. After that, I list the process for uploading these changes to GitHub. I also explore the mechanics of what is going on in this process.</p>
+      </section>
+
+      <!-- Collapsible Sections -->
+      <section class="entry-sections" aria-label="Expandable sections">
+
+        <!-- Questions -->
+        <details class="panel" id="questions">
+          <summary>Questions &amp; Objectives</summary>
+          <div class="panel-body">
+            <ol class="process-list">
+              <li>I want to test my site updates before I run them on GitHub to identify any bugs.</li>
+              <li>Next, I want to publish those updates onto GitHub.</li>
+            </ol>
+          </div>
+        </details>
+
+        <!-- Process -->
+        <details class="panel" id="process">
+          <summary>Process</summary>
+          <div class="panel-body">
+            <ol class="process-list">
+
+              <!-- Step 1 -->
+            <ol>
+             <li>
+                <p><strong></strong></p>
+                <!--- Iimage 1.1 --->
+                <section class="image-grid">
+                <div class="image-card">
+                    <h3></h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="" alt="" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026-1-15_terminus/Fig_3-01.png" alt="" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+            
+                <!--- Image 1.2 --->
+                <div class="image-card">
+                    <h3></h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="" alt="" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026-1-15_terminus/Fig_3-02.png" alt="VPS 2" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+                
+                <!--- Image 1.3 --->
+                <div class="image-card">
+                    <h3></h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="" alt="" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="" alt="" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Image 1.4 --->
+                <div class="image-card">
+                    <h3></h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="" alt="" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="" alt="" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+            
+                <!--- Image 1.5 --->
+                <div class="image-card">
+                    <h3></h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="" alt="" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="" alt="" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>                
+              </li>
+              
+              <!--- Step 2 --->
+              <li>  
+              <p><strong></strong></p>
+                
+              <!--- Image 2.1 --->
+                <section class="image-grid">
+                <div class="image-card">
+                    <h3></h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="" alt="" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026-1-15_terminus/Fig_3-01.png" alt="" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+            
+                <!--- Image 2.2 --->
+                <div class="image-card">
+                    <h3></h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="" alt="" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026-1-15_terminus/Fig_3-02.png" alt="VPS 2" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+                
+                <!--- Image 2.3 --->
+                <div class="image-card">
+                    <h3></h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="" alt="" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="" alt="" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Image 2.4 --->
+                <div class="image-card">
+                    <h3></h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="" alt="" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="" alt="" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+            
+                <!--- Image 2.5 --->
+                <div class="image-card">
+                    <h3></h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="" alt="" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="" alt="" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>                
+              </li>
+
+            </ol>
+          </div>
+        </details>
+
+        <!-- Conclusions -->
+        <details class="panel" id="conclusions">
+          <summary>Conclusions</summary>
+          <div class="panel-body">
+            <p></p>
+          </div>
+        </details>
+
+        <!-- Haiku -->
+        <details class="panel" id="haiku">
+          <summary>Shevek's Haiku</summary>
+          <div class="panel-body">
+            <p></p>
+          </div>
+        </details>
+
+      </section>
+    </main>
+  </body>
+</html>

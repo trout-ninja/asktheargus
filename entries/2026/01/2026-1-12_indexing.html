@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Resolving Indexing Issues — Ask the Argus</title>
+
+    <link
+      rel="canonical"
+      href="https://www.asktheargus.com/entries/2026/01/2026-1-12_indexing.html"
+    />
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <!--- Srcipt for Clicking out of Images -->
+<script>
+  window.addEventListener("DOMContentLoaded", () => {
+    // Close on tap/click of overlay background or close button
+    document.querySelectorAll(".entry-image details").forEach((details) => {
+      const overlay = details.querySelector(".fullscreen");
+      const closeBtn = details.querySelector(".fs-close");
+      const fullImg = overlay ? overlay.querySelector("img") : null;
+
+      if (!overlay) return;
+
+      // Close button always closes
+      if (closeBtn) {
+        closeBtn.addEventListener("pointerdown", (e) => {
+          e.preventDefault();
+          details.removeAttribute("open");
+        });
+      }
+
+      // Tap/click on the dark overlay closes
+      overlay.addEventListener("pointerdown", (e) => {
+        // If you tapped the image, do NOT close (optional behavior)
+        if (fullImg && e.target === fullImg) return;
+
+        // If you tapped anywhere else (overlay background), close
+        details.removeAttribute("open");
+      });
+    });
+
+    // Escape closes any open image (desktop)
+    document.addEventListener("keydown", (e) => {
+      if (e.key !== "Escape") return;
+      document.querySelectorAll(".entry-image details[open]").forEach((d) => {
+        d.removeAttribute("open");
+      });
+    });
+  });
+</script>
+
+  <body>
+    <main class="entry-page">
+      <!-- Title / Subtitle -->
+      <header class="entry-top">
+         <a href="../../../index.html">&larr; Back to Home</a>
+        <p class="site-title">Ask the Argus</p>
+        <h1 class="entry-title">Resolving Indexing Issues</h1>
+        <p class="entry-subtitle">
+          Diagnosing sitemap scope, internal links, and crawl signals
+        </p>
+      </header>
+
+      <!-- Synopsis (always visible) -->
+      <section class="synopsis">
+        <h2>Synopsis</h2>
+        <p>
+          This entry investigates why Google is only indexing two of my pages,
+          despite there being several pages it should be indexing. Issues
+          included lack of content in the index hub and issues with the sitemap.
+          Time will tell if this solution addressed the issue.
+        </p>
+      </section>
+
+      <!-- Collapsible sections -->
+      <section class="entry-sections" aria-label="Expandable sections">
+        <details class="panel" id="questions">
+          <summary>Questions &amp; Objectives</summary>
+          <div class="panel-body">
+            <ol class="process-list">
+              <li>Why is Google only indexing two of my pages?</li>
+              <li>What do I need to check to verify everything is correct?</li>
+            </ol>
+          </div>
+        </details>
+
+        <!-- Process Section -->
+        <details class="panel" id="process">
+          <summary>Process</summary>
+
+          <div class="panel-body">
+            <ol class="process-list">
+              <!-- Step One -->
+              <li>
+                <p>
+                  <strong
+                    >I take a screenshot of my Google Search Console (Fig 1.1)
+                    and share the symptoms with Shevek (Fig 1.2).</strong
+                  >
+                  It appears only two pages are being indexed.
+                </p>
+
+                <section class="image-pair">
+                  <div class="image-card">
+                    <h3>Fig 1.1 - Two Pages Indexed</h3>
+
+                    <figure class="entry-image summary-16x9">
+                      <details>
+                        <summary>
+                          <img
+                            src="/images/2026/01/2026-1-12-indexing/Fig_1-1.png"
+                            alt="Google Search Console showing only two pages indexed"
+                          />
+                        </summary>
+
+                        <div class="fullscreen">
+                            <button class="fs-close" type="button" aria-label="Close image">x</button>
+                          <img
+                            src="/images/2026/01/2026-1-12-indexing/Fig_1-1.png"
+                            alt="Google Search Console report indicating only two indexed pages"
+                          />
+                        </div>
+                      </details>
+
+                      
+                    </figure>
+                  </div>
+
+                  <div class="image-card">
+                    <h3>Fig 1.2 - Shevek Explains the Process</h3>
+
+                    <figure class="entry-image summary-16x9">
+                      <details>
+                        <summary>
+                          <img
+                            src="/images/2026/01/2026-1-12-indexing/Fig_1-2.png"
+                            alt="Troubleshooting steps for indexing issues"
+                          />
+                        </summary>
+
+                        <div class="fullscreen">
+                            <button class="fs-close" type="button" aria-label="Close image">x</button>
+                          <img
+                            src="/images/2026-1-12-indexing/Fig_1-2.png"
+                            alt="Step-by-step guidance for indexing troubleshooting"
+                          />
+                        </div>
+                      </details>
+
+                    </figure>
+                  </div>
+                </section>
+              </li>
+
+              <!-- Step Two -->
+              <li>
+                <p>
+                  <strong
+                    >I remember learning all the parameters are at the beginning
+                    of the page, standard.</strong
+                  >
+                  Knowing this, before I proceed to my sitemap, I take a
+                  screenshot and share it with Shevek (Fig 1.4). Shevek explains
+                  my index hub appears to be incredibly small (Fig 1.3).
+                </p>
+
+                <section class="image-pair">
+                  <div class="image-card">
+                    <h3>Fig 1.3 - Shevek Highlights Lack of Index Hub</h3>
+
+                    <figure class="entry-image summary-16x9">
+                      <details>
+                        <summary>
+                          <img
+                            src="/images/2026/01/2026-1-12-indexing/Fig_1-3.png"
+                            alt="Commentary noting the index hub is very small"
+                          />
+                        </summary>
+
+                        <div class="fullscreen">
+                            <button class="fs-close" type="button" aria-label="Close image">x</button>
+                          <img
+                            src="/images/2026/01/2026-1-12-indexing/Fig_1-3.png"
+                            alt="Explanation highlighting why the index hub appears too small"
+                          />
+                        </div>
+                      </details>
+
+                      
+                    </figure>
+                  </div>
+
+                  <div class="image-card">
+                    <h3>Fig 1.4 - My Tiny Index Hub</h3>
+
+                    <figure class="entry-image summary-16x9">
+                      <details>
+                        <summary>
+                          <img
+                            src="/images/2026/01/2026-1-12-indexing/Fig_1-4.png"
+                            alt="Index hub page showing very few links"
+                          />
+                        </summary>
+
+                        <div class="fullscreen">
+                            <button class="fs-close" type="button" aria-label="Close image">x</button>
+                          <img
+                            src="/images/2026/01/2026-1-12-indexing/Fig_1-4.png"
+                            alt="Index hub page with minimal internal links"
+                          />
+                        </div>
+                      </details>
+
+                    </figure>
+                  </div>
+                </section>
+              </li>
+
+              <!-- Step Three -->
+              <li>
+                <p>
+                  <strong>I add the needed elements to my index hub (Fig 1.5).</strong>
+                </p>
+            <section class="image-single">
+            <div class="image-card">
+                <h3>Fig 1.5 - Index Hub Updated</h3>
+                <figure class="entry-image summary-16x9">
+                  <details>
+                    <summary>
+                      <img
+                        src="/images/2026/01/2026-1-12-indexing/Fig_1-5.png"
+                        alt="Updated index hub with more internal links"
+                      />
+                    </summary>
+
+                    <div class="fullscreen">
+                        <button class="fs-close" type="button" aria-label="Close image">x</button>
+                      <img
+                        src="/images/2026/01/2026-1-12-indexing/Fig_1-5.png"
+                        alt="Index hub updated to include links to most entries"
+                      />
+                    </div>
+                  </details>
+                </figure>
+            </section>
+              </li>
+
+              <!-- Step Four -->
+              <li>
+                <p>
+                  <strong>I review my sitemap (Fig 1.6).</strong> Everything appears fine,
+                  but I copy and paste it for Sheveks review (Fig 1.7). He identifies
+                  I am missing a closing tag.
+                </p>
+
+                <section class="image-pair">
+                  <div class="image-card">
+                    <h3>Fig 1.6 My Sitemap</h3>
+
+                    <figure class="entry-image summary-16x9">
+                      <details>
+                        <summary>
+                          <img
+                            src="/images/2026/01/2026-1-12-indexing/Fig_1-6.png"
+                            alt="Sitemap XML displayed in an editor"
+                          />
+                        </summary>
+
+                        <div class="fullscreen">
+                            <button class="fs-close" type="button" aria-label="Close image">x</button>
+                          <img
+                            src="/images/2026/01/2026-1-12-indexing/Fig_1-6.png"
+                            alt="Sitemap contents showing a list of URLs"
+                          />
+                        </div>
+                      </details>
+
+                
+                    </figure>
+                  </div>
+
+                  <div class="image-card">
+                    <h3>Fig 1.7 Shevek's Take On My Sitemap</h3>
+
+                    <figure class="entry-image summary-16x9">
+                      <details>
+                        <summary>
+                          <img
+                            src="/images/2026/01/2026-1-12-indexing/Fig_1-7.png"
+                            alt="Review pointing out a missing closing tag in the sitemap"
+                          />
+                        </summary>
+
+                        <div class="fullscreen">
+                            <button class="fs-close" type="button" aria-label="Close image">x</button>
+                          <img
+                            src="/images/2026/01/2026-1-12-indexing/Fig_1-7.png"
+                            alt="Markup highlighting the missing closing tag"
+                          />
+                        </div>
+                      </details>
+
+                    </figure>
+                  </div>
+                </section>
+              </li>
+
+              <!-- Step Five -->
+              <li>
+                <p><strong>I make the needed updates to my sitemap (Fig 1.8).</strong></p>
+                <section class="image-single">
+                <div class="image-card">
+                    <h3>Fig 1.8 - Updated Sitemap</h3>
+                <figure class="entry-image summary-16x9">
+                  <details>
+                    <summary>
+                      <img
+                        src="/images/2026/01/2026-1-12-indexing/Fig_1-8.png"
+                        alt="Updated sitemap after fixing the closing tag"
+                      />
+                    </summary>
+
+                    <div class="fullscreen">
+                        <button class="fs-close" type="button" aria-label="Close image">x</button>
+                      <img
+                        src="/images/2026/01/2026-1-12-indexing/Fig_1-8.png"
+                        alt="Corrected sitemap showing the fixed structure"
+                      />
+                    </div>
+                  </details>
+
+                </figure>
+                </section>
+              </li>
+            </ol>
+          </div>
+        </details>
+
+        <!-- Conclusion -->
+        <details class="panel" id="conclusions">
+          <summary>Conclusions</summary>
+          <div class="panel-body">
+            <p>
+              Being new to making a website, there are a number of things I may have
+              overlooked. In time, they will reveal themselves. The index hub has been
+              modified and the sitemap updated.
+            </p>
+          </div>
+        </details>
+
+        <!-- Sheveks Haiku -->
+        <details class="panel" id="haiku">
+            <summary>Shevek's Haiku</summary>
+            <div class="panel-body">
+                <p>
+                Broken paths whisper,<br>
+                Spiders pass silent doorways—<br>
+                    Links bloom, pages wake.
+                </p>
+            </div>
+        </details>
+      </section>
+    </main>
+  </body>
+</html>
+
