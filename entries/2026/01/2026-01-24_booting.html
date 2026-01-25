@@ -1,0 +1,1827 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Booting Sandbox Part I</title>
+
+    <link rel="canonical" href="https://www.asktheargus.com/entries/2026/01/2026-1-24_booting" />
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+
+  <!-- Script for Clicking out of Images -->
+  <script>
+    window.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll(".entry-image details").forEach((details) => {
+        const overlay = details.querySelector(".fullscreen");
+        const closeBtn = details.querySelector(".fs-close");
+        const fullImg = overlay ? overlay.querySelector("img") : null;
+
+        if (!overlay) return;
+
+        if (closeBtn) {
+          closeBtn.addEventListener("pointerdown", (e) => {
+            e.preventDefault();
+            details.removeAttribute("open");
+          });
+        }
+
+        overlay.addEventListener("pointerdown", (e) => {
+          if (fullImg && e.target === fullImg) return;
+          details.removeAttribute("open");
+        });
+      });
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key !== "Escape") return;
+        document.querySelectorAll(".entry-image details[open]").forEach((d) => {
+          d.removeAttribute("open");
+        });
+      });
+    });
+  </script>
+
+  <body>
+    <main class="entry-page">
+
+      <!-- Title / Subtitle -->
+      <header class="entry-top">
+        <a href="../../../index.html">&larr; Back to Home</a>
+        <p class="site-title">Ask the Argus</p>
+        <h1 class="entry-title">Booting Sandbox Part I</h1>
+        <p class="entry-subtitle">Getting Familiar With GRUB and Experimenting With UUID and LVM</p>
+      </header>
+
+      <!-- Synopsis -->
+      <section class="synopsis">
+        <h2>Synopsis</h2>
+        <p>Previously, I had Shevek make me a sandbox that simulates different booting issues so I would better understand the bootloader process. I now have the time to investigate this further. Additionally, I document the process for copying sandboxes to my Virtual Machine for experimentation.</p>
+      </section>
+
+      <!-- Collapsible Sections -->
+      <section class="entry-sections" aria-label="Expandable sections">
+
+        <!-- Questions -->
+        <details class="panel" id="questions">
+          <summary>Questions &amp; Objectives</summary>
+          <div class="panel-body">
+            <ol class="process-list">
+              <li>What is the process for copying sandboxes onto my Virtual Machine?</li>
+              <li>Will the booting sandbox work and what will I learn regadrless of it's function?</li>
+              <li>Is this a practical way of learnining?</li>
+              <li>What happens if I put in the wrong UUID on the GRUB menu?</li>
+              <li>What on earth is an LVM?</li>
+            </ol>
+          </div>
+        </details>
+
+        <!-- Process -->
+        <details class="panel" id="process">
+          <summary>Process</summary>
+          <div class="panel-body">
+            <ol class="process-list">
+
+              <!-- Step 1 -->
+            <ol>
+             <li>
+                 <p><strong>First I open my Virtual Machine and scp my sandbox from terminal to it.</strong> I also ask Shevek to elaborate on some of the other potential powers of the <code>scp</code> command. I <code>ssh</code> into my Virtual Machine.</p>
+                       <!--- Iimage 1.1 --->
+                <section class="image-grid">
+                <div class="image-card">
+                    <h3><code>scp</code>'ing and <code>ssh</code>'ing</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_1-6.png" alt="Starting the VM" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_1-6.png" alt="Starting the VM" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+               
+                     <!--- Iimage 1.2 --->
+                <div class="image-card">
+                    <h3><code>scp</code>'ing and <code>ssh</code>'ing</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_1-1.png" alt="scp and ssh" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_1-1.png" alt="scp and ssh" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+            
+                <!--- Image 1.3 --->
+                <div class="image-card">
+                    <h3><code>scp</code> Revealed 1</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_1-2.png" alt="scp 1" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_1-2.png" alt="scp 1" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+                
+                <!--- Image 1.4 --->
+                <div class="image-card">
+                    <h3><code>scp</code> Revealed 2</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_1-3.png" alt="scp 2" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_1-3.png" alt="scp 2" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Image 1.5 --->
+                <div class="image-card">
+                    <h3><code>scp</code> Revealed 3</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_1-4.png" alt="scp 3" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_1-4.png" alt="scp 3" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+            
+                <!--- Image 1.6 --->
+                <div class="image-card">
+                    <h3><code>scp</code> Revealed 4</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_1-5.png" alt="scp 4" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_1-5.png" alt="scp 4" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+            </li>
+              
+              <!--- Step 2 --->
+              <li>  
+              <p><strong>Before I can unzip the file and set up shop, I need to download the software to do so.</strong> I wipe the slate clean and start from scratch using snapshot on my Virtual Machine after every sandbox. This is the way I intend to form habitual, frictional learning. I also didn't like the first sandbox Shevek made me. I have him make me one that includes a lesson plan for the faults and a guide if I get stuck. I've attached that sandbox in the sandbox archives and the bottom of this page.</p>
+                
+              <!--- Image 2.1 --->
+                <section class="image-grid">
+                <div class="image-card">
+                    <h3>Downloading <code>unzip</code></h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_2-1.png" alt="Downloading unzip" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_2-1.png" alt="Downloading unzip" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+            
+                <!--- Image 2.2 --->
+                <div class="image-card">
+                    <h3>Setting Up Shop</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_2-2.png" alt="Unzipping Sandbox" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_2-2.png" alt="Unzipping Sandbox" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+                
+                <!--- Image 2.3 --->
+                <div class="image-card">
+                    <h3>Lesson Plan 1</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_2-3.png" alt="Boot Faults 1" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_2-3.png" alt="Boot Faults 1" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+              
+                <!--- Image 2.4 --->
+                <div class="image-card">
+                    <h3>Lesson Plan 2</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_2-4.png" alt="Boot Faults 2" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_2-4.png" alt="Boot Faults 2" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Image 2.5 --->
+                <div class="image-card">
+                    <h3>Lesson Plan 3</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_2-5.png" alt="Boot Faults 3" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_2-5.png" alt="Boot Faults 3" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Image 2.6 --->
+                <div class="image-card">
+                    <h3>Lesson Plan 4</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_2-6.png" alt="Boot Faults 4" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_2-6.png" alt="Boot Faults 4" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Image 2.7 --->
+                <div class="image-card">
+                    <h3>Lesson Plan 5</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_2-7.png" alt="Boot Faults 5" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_2-7.png" alt="Boot Faults 5" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Image 2.8 --->
+                <div class="image-card">
+                    <h3>Lesson Plan 6</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_2-8.png" alt="Boot Faults 6" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_2-8.png" alt="Boot Faults 6" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+              </li>
+
+              <!--- Step 3 --->
+              <li>
+                  <p><strong>Before I proceed blindly, I have Shevek mkae me a lesson for "Fault 1" regarding wrong UUID so I can better understand how to approach the fault.</strong> I also make a mental note of the command <code>sudo blkid</code>, as it displays the UUID. Having this information could come in handy.</p>
+                 
+                <!--- Iimage 3.1 --->
+                <section class="image-grid">
+                <div class="image-card">
+                    <h3>UUID Lesson 1</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_3-1.png" alt="UUID Lesson 1" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_3-1.png" alt="UUID Lesson 1" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+            
+                <!--- Image 3.2 --->
+                <div class="image-card">
+                    <h3>UUID Lesson 2</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_3-2.png" alt="UUID Lesson 2" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_3-2.png" alt="UUID Lesson 2" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+                
+                <!--- Image 3.3 --->
+                <div class="image-card">
+                    <h3>UUID Lesson 3</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_3-3.png" alt="UUID Lesson 3" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_3-3.png" alt="UUID Lesson 3" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Image 3.4 --->
+                <div class="image-card">
+                    <h3>UUID Lesson 4</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_3-4.png" alt="UUID Lesson 4" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_3-4.png" alt="UUID Lesson 4" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+            
+                <!--- Image 3.5 --->
+                <div class="image-card">
+                    <h3>UUID Lesson 5</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_3-5.png" alt="UUID Lesson 5" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_3-5.png" alt="UUID Lesson 5" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Image 3.6 --->
+                <div class="image-card">
+                    <h3>UUID Lesson 6</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_3-6.png" alt="UUID Lesson 6" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_3-6.png" alt="UUID Lesson 6" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>                
+           
+                <!--- Image 3.7 --->
+                <div class="image-card">
+                    <h3>UUID Lesson 7</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_3-7.png" alt="UUID Lesson 7" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_3-7.png" alt="UUID Lesson 7" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>       
+
+
+              </li>
+
+              <!--- Step 4 --->
+               <li>  
+              <p><strong>After reviewing Shevek's lesson, I have questions. What is a rescue shell and how do I access it?</strong></p>
+               
+              <!--- Image 4.1 --->
+                <section class="image-grid">
+                <div class="image-card">
+                    <h3>Rescue Shell 1</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_4-1.png" alt="Rescue Shell 1" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_4-1.png" alt="Rescue Shell 1" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+                <!--- Image 4.2 --->
+                 <div class="image-card">
+                    <h3>Rescue Shell 2</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_4-2.png" alt="Recue Shell 2" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_4-2.png" alt="Rescue Shell 2" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+              <!--- Image 4.3 --->
+                <div class="image-card">
+                    <h3>Rescue Shell 3</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_4-3.png" alt="Rescue Shell 3" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_4-3.png" alt="Rescue Shell 3" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+                <!--- Image 4.4 --->
+                 <div class="image-card">
+                    <h3>Rescue Shell 4</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_4-4.png" alt="Rescue Shell 4" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_4-4.png" alt="Rescue Shell 4" />
+                            </div>
+                        </details>
+                    </figure>
+                </div> 
+
+              <!--- Image 4.5 --->
+                <div class="image-card">
+                    <h3>Rescue Shell 5</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_4-5.png" alt="Rescue Shell 5" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_4-5.png" alt="Rescue Shell 5" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+                <!--- Image 4.6 --->
+                 <div class="image-card">
+                    <h3>Rescue Shell 6</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_4-6.png" alt="Rescue Shell 6" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_4-6.png" alt="Rescue Shell 6" />
+                            </div>
+                        </details>
+                    </figure>
+                </div> 
+
+                <!--- Image 4.7 --->
+                <div class="image-card">
+                    <h3>Rescue Shell 7</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_4-7.png" alt="Rescue Shell 7" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_4-7.png" alt="Rescue Shell 7" />
+                            </div>
+                        </details>
+                    </figure>
+                </div> 
+             </li>
+
+              <!--- Step 5 --->
+               <li>  
+                   <p><strong>I type the command <code>sudo blkid</code> to make note of the UUID, but notice four possible UUID's are displayed. Which one is the real UUID?</strong> I consult Shevek as to which one to focus on for the purposes of the lab.</p>
+               
+              <!--- Image 5.1 --->
+                <section class="image-grid">
+                <div class="image-card">
+                    <h3>Which UUID?</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_5-1.png" alt="Which UUID" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_5-1.png" alt="Which UUID" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+                <!--- Image 5.2 --->
+                 <div class="image-card">
+                    <h3>UUID's Identified 1</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_5-2.png" alt="UUID ID'd 1" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_5-2.png" alt="UUID ID'd 1" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+              <!--- Image 5.3 --->
+                <div class="image-card">
+                    <h3>UUID's Identified 2</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_5-3.png" alt="UUID's ID'd 2" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_5-3.png" alt="UUID's ID'd 2" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+                <!--- Image 5.4 --->
+                 <div class="image-card">
+                    <h3>UUID's Identified 3</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_5-4.png" alt="UUID's ID'd 3" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_5-4.png" alt="UUID's ID'd 3" />
+                            </div>
+                        </details>
+                    </figure>
+                </div> 
+
+              <!--- Image 5.5 --->
+                <div class="image-card">
+                    <h3>UUID's Identified 4</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_5-5.png" alt="UUID's ID'd 4" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_5-5.png" alt="UUID's ID'd 4" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+                <!--- Image 5.6 --->
+                 <div class="image-card">
+                    <h3>UUID's Indetified 5</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_5-6.png" alt="UUID's ID'd 5" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_5-6.png" alt="UUID's ID'd 5" />
+                            </div>
+                        </details>
+                    </figure>
+                </div> 
+               </li>
+            
+            <!--- Step 6 --->
+            <li>
+                <p><strong>I run into an issue with the lab. In my Virtual Machine, the UUID is listed, however, the boot configuration uses something called an LVM. I will ask for clarification on what that is in a moment. But first, it appears the LVM is a system that must be bypassed for my UUID lab to function properly.</strong></p>
+                <!--- Image 6.1 --->
+                <section class="image-grid">
+                <div class="image-card">
+                    <h3>VM's UUID #</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_6-1.png" alt="UUID #" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_6-1.png" alt="UUID #" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+                <!--- Image 6.2 --->
+                 <div class="image-card">
+                    <h3>Booting Menu and LVM?</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_6-2.png" alt="Booting Menu" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_6-2.png" alt="Booting Menu" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+                <!--- Image 6.3 --->
+                 <div class="image-card">
+                    <h3>Changing LVM to UUID 1</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_6-3.png" alt="LVM to UUID 1" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_6-3.png" alt="LVM to UUID 1" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+                <!--- Image 6.4 --->
+                 <div class="image-card">
+                    <h3>Changing LVM to UUID 2</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_6-4.png" alt="LVM to UUID 2" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_6-4.png" alt="LVM to UUID 2" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+                <!--- Image 6.5 --->
+                 <div class="image-card">
+                    <h3>Changing LVM to UUID 3</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_6-5.png" alt="LVM to UUID 3" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_6-5.png" alt="LVM to UUID 3" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+             <!--- Image 6.6 --->
+                 <div class="image-card">
+                    <h3>Changing LVM to UUID 4</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_6-6.png" alt="LVM to UUID 4" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_6-6.png" alt="LVM to UUID 4" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+            <!--- Image 6.7 --->
+                 <div class="image-card">
+                    <h3>Changing LVM to UUID 5</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_6-7.png" alt="LVM to UUID 5" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_6-7.png" alt="LVM to UUID 5" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+            <!--- Image 6.8 --->
+                 <div class="image-card">
+                    <h3>Changing LVM to UUID 6</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_6-8.png" alt="LVM to UUID 6" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_6-8.png" alt="LVM to UUID 6" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+             </li>
+             
+             <!--- Step 7 --->
+            <li>
+                <p><strong>Shevek, before I proceed any further, what the fuck is an LVM and why is Rocky Rockin' it?</strong> Shevek explains it's due to the flexibility of an LVM as compared to a UUID. These things, at this time, still seem ambigious to me.</p>
+                <!--- Image 7.1 --->
+                <section class="image-grid">
+                <div class="image-card">
+                    <h3>LVM Explained 1</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_7-1.png" alt="LVM 1" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_7-1.png" alt="LVM 1" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+                <!--- Image 7.2 --->
+                 <div class="image-card">
+                    <h3>LVM Explained 2</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_7-2.png" alt="LVM 2" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_7-2.png" alt="LVM 2" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+                <!--- Image 7.3 --->
+                 <div class="image-card">
+                    <h3>LVM Explained 3</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_7-3.png" alt="LVM 3" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_7-3.png" alt="LVM 3" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+                <!--- Image 7.4 --->
+                 <div class="image-card">
+                    <h3>LVM Explained 4</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_7-4.png" alt="LVM 4" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_7-4.png" alt="LVM 4" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+                <!--- Image 7.5 --->
+                 <div class="image-card">
+                    <h3>LVM Explained 5</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_7-5.png" alt="LVM 5" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_7-5.png" alt="LVM 5" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+             <!--- Image 7.6 --->
+                 <div class="image-card">
+                    <h3>LVM Explained 6</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_7-6.png" alt="LVM 6" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_7-6.png" alt="LVM 6" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+            <!--- Image 7.7 --->
+                 <div class="image-card">
+                    <h3>LVM Explained 7</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_7-7.png" alt="LVM 7" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_7-7.png" alt="LVM 7" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+             </li>           
+             
+             <!--- Step 8 --->
+            <li>
+                <p><strong>I could get lost in the semantics, but for the purpose of this lab, I ignore it's allure and proceed with the assigned task.</strong> In due time all will become clear, I hope. I copy and paste the results of <code>sudo lsblk</code> to Shevek's prompt and follow his lead. I make the changes to my GRUB configuration, per his instruction and watch as emergency mode starts. Finally, we are getting somewhere.</p>
+                <!--- Image 8.1 --->
+                <section class="image-grid">
+                <div class="image-card">
+                    <h3>Breaking the UUID 1</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_8-1.png" alt="UUID Break 1" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_8-1.png" alt="UUID Break 1" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+                <!--- Image 8.2 --->
+                 <div class="image-card">
+                    <h3>Breaking the UUID 2</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_8-2.png" alt="UUID Break 2" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_8-2.png" alt="UUID Break 2" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+                <!--- Image 8.3 --->
+                 <div class="image-card">
+                    <h3>Breaking the UUID 3</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_8-3.png" alt="UUID Break 3" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_8-3.png" alt="UUID Break 3" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+                <!--- Image 8.4 --->
+                 <div class="image-card">
+                    <h3>Breaking the UUID 4</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_8-4.png" alt="UUID Break 4" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_8-4.png" alt="UUID Break 4" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+                <!--- Image 8.5 --->
+                 <div class="image-card">
+                    <h3>Breaking the UUID 5</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_8-5.png" alt="UUID Break 5" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_8-5.png" alt="UUID Break 5" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+             <!--- Image 8.6 --->
+                 <div class="image-card">
+                    <h3>Original GRUB w/LVM</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_8-6.png" alt="Original GRUB" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_8-6.png" alt="Original GRUB" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+            <!--- Image 8.7 --->
+                 <div class="image-card">
+                    <h3>Modified GRUB</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_8-7.png" alt="Modified GRUB" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_8-7.png" alt="Modified GRUB" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+                      
+            <!--- Image 8.8 --->
+                 <div class="image-card">
+                    <h3>Emergency Mode</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_8-8.png" alt="Emergency Mode" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_8-8.png" alt="Emergency Mode" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+             </li>   
+           
+         <!--- Step 9 --->
+            <li>
+                <p><strong>Now that I've made it this far I am completely blind. I ask Shevek for further guidance on the nxt steps.</strong> I will definitely be reviewing some <code>man</code> pages in the near future. As I follow Sheveks instructions, I do encounter an issue. As the system would appear to boot properly, it remains in limbo indefinitely.</p>
+                <!--- Image 9.1 --->
+                <section class="image-grid">
+                <div class="image-card">
+                    <h3>System Recovery 1.1</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_9-1.png" alt="System Recovery 1.1" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_9-1.png" alt="System Recovery 1.1" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+                <!--- Image 9.2 --->
+                 <div class="image-card">
+                    <h3>System Recovery 1.2</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_9-2.png" alt="System Recovery 1.2" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_9-2.png" alt="System Recovery 1.2" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+                <!--- Image 9.3 --->
+                 <div class="image-card">
+                    <h3>System Recovery 1.3</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_9-3.png" alt="System Recovery 1.3" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_9-3.png" alt="System Recovery 1.3" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+                <!--- Image 9.4 --->
+                 <div class="image-card">
+                    <h3>System Recovery 1.4</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_9-4.png" alt="System Recovery 1.4" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_9-4.png" alt="System Recovery 1.4" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+                <!--- Image 9.5 --->
+                 <div class="image-card">
+                    <h3>Mounting the Root Filesystem</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_9-5.png" alt="Mounting the Root Filesystem" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_9-5.png" alt="Mounting the Root Filesystem" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+             <!--- Image 9.6 --->
+                 <div class="image-card">
+                    <h3>The Endless Loop</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_9-6.png" alt="Booting Issues" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_9-6.png" alt="Booting Issues" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+             </li>   
+         <!--- Step 10 --->
+            <li>
+                <p><strong>I feel stuck. How do I stop this endless cycle? I give a good old fashioned <code>ctr+alt+del</code> and it restarts as if nothing went wrong the first time. What's going on here?</strong> I ask Shevek. He explains edits made in the GRUB menu are temporary, hence why things went back to normal once I rebooted.</p>
+                <!--- Image 10.1 --->
+                <section class="image-grid">
+                <div class="image-card">
+                    <h3>A Quick Look at GRUB</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_10-1.png" alt="GRUB Menu" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_10-1.png" alt="Grub Menu" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+                <!--- Image 10.2 --->
+                 <div class="image-card">
+                    <h3>All is Well After Reboot</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_10-2.png" alt="Terminal Window" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_10-2.png" alt="Terminal Window" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+                <!--- Image 10.3 --->
+                 <div class="image-card">
+                     <h3>Why <code>systemd</code> Was Waiting</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_10-3.png" alt="Fault/Success Explained 1" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_10-3.png" alt="Fault/Success Explained 1" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+                <!--- Image 10.4 --->
+                 <div class="image-card">
+                     <h3>Why <code>systemd</code> Was Waiting</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_10-4.png" alt="Fault/Succes Explained 2" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_10-4.png" alt="Fault/Success Explained 2" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+             </li>   
+
+            <!--- Step 11 --->
+            <li>
+                <p><strong>I am not in the mood to leave this LVM buisness unresolved.</strong> I ask Shevek more questions for clarification. I'm glad I did. I now have a better understanding of the system. I need to stop viewing the LVM as seperate from the UUID, and instead understand that the UUID is contained within a filesystem in the LVM: they work together, not against one another. All that remains is understanding the contents of GRUB.</p>
+                <!--- Image 11.1 --->
+                <section class="image-grid">
+                <div class="image-card">
+                    <h3>LVM Revisited 1</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_11-1.png" alt="LVM Revisited 1" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_11-1.png" alt="LVM Revisited 1" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+                <!--- Image 11.2 --->
+                 <div class="image-card">
+                    <h3>LVM Revisited 2</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_11-2.png" alt="LVM Revisited 2" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_11-2.png" alt="LVM Revisited 2" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+                <!--- Image 11.3 --->
+                 <div class="image-card">
+                    <h3>LVM Revisited 3</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_11-3.png" alt="LVM Revisited 3" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_11-3.png" alt="LVM Revisited 3" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+                <!--- Image 11.4 --->
+                 <div class="image-card">
+                    <h3>LVM Revisited 4</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_11-4.png" alt="LVM Revisited 4" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_11-4.png" alt="LVM Revisited 4" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+                <!--- Image 11.5 --->
+                 <div class="image-card">
+                    <h3>LVM Revisited 5</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_11-5.png" alt="LVM Revisited 5" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_11-5.png" alt="LVM Revisited 5" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+             <!--- Image 11.6 --->
+                 <div class="image-card">
+                    <h3>LVM Revisited 6</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_11-6.png" alt="LVM Revisited 6" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_11-6.png" alt="LVM Revisited 6" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+            <!--- Image 11.7 --->
+                 <div class="image-card">
+                    <h3>LVM Revisited 7</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_11-7.png" alt="LVM Revisited 7" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_11-7.png" alt="LVM Revisited 7" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+                      
+            <!--- Image 11.8 --->
+                 <div class="image-card">
+                    <h3>LVM Revisited 8</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_11-8.png" alt="LVM Revisited 8" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_11-8.png" alt="LVM Revisited 8" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+             
+            <!--- Image 11.9 --->
+                 <div class="image-card">
+                    <h3>LVM Revisited 9</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_11-9.png" alt="LVM Revisited 9" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_11-9.png" alt="LVM Revisited 9" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+                      
+            <!--- Image 11.10 --->
+                 <div class="image-card">
+                    <h3>LVM Revisited 10</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_11-10.png" alt="LVM Revisited 10" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_11-10.png" alt="LVM Revisited 10" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+            </li>   
+
+            <!--- Step 12 --->
+            <li>
+                <p><strong>That leaves one, maybe two stones left to turn. What exactly am I looking at in GRUB editing?</strong> I ask Shevek to break down every piece of the code down to it's function so I can better understand.</p>
+                <!--- Image 12.1 --->
+                <section class="image-grid">
+                <div class="image-card">
+                    <h3>Grub Revisited 1</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_12-1.png" alt="GRUB Revisited 1" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_12-1.png" alt="GRUB Revisited 1" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+                <!--- Image 12.2 --->
+                 <div class="image-card">
+                    <h3>GRUB Revisited 2</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_12-2.png" alt="GRUB Revisited 2" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_12-2.png" alt="GRUB Revisited 2" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+                <!--- Image 12.3 --->
+                 <div class="image-card">
+                    <h3>GRUB Revisited 3</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_12-3.png" alt="GRUB Revisited 3" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_12-3.png" alt="GRUB Revisited 3" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+                <!--- Image 12.4 --->
+                 <div class="image-card">
+                    <h3>GRUB Revisited 4</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_12-4.png" alt="GRUB Revisited 4" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_12-4.png" alt="GRUB Revisited 4" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+                <!--- Image 12.5 --->
+                 <div class="image-card">
+                    <h3>GRUB Revisited 5</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_12-5.png" alt="GRUB Revisited 5" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_12-5.png" alt="GRUB Revisited 5" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+             <!--- Image 12.6 --->
+                 <div class="image-card">
+                    <h3>GRUB Revisited 6</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_12-6.png" alt="GRUB Revisited 6" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_12-6.png" alt="GRUB Revisited 6" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+            <!--- Image 12.7 --->
+                 <div class="image-card">
+                    <h3>GRUB Revisited 7</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_12-7.png" alt="GRUB Revisited 7" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_12-7.png" alt="GRUB Revisited 7" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+                      
+            <!--- Image 12.8 --->
+                 <div class="image-card">
+                    <h3>GRUB Revisited 8</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_12-8.png" alt="GRUB Revisited 8" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_12-8.png" alt="GRUB Revisited 8" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+             
+            <!--- Image 12.9 --->
+                 <div class="image-card">
+                    <h3>GRUB Revisited 9</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_12-9.png" alt="GRUB Revisited 9" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_12-9.png" alt="GRUB Revisited 9" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>    
+            </li>   
+
+            <!--- Step 13 --->
+            <li>
+                <p><strong>Great! We've clarified GRUB and I have a little better understanding of an LVM. However, it still feels as though I'm not standing on solid ground when I ponder it.</strong> I ask Shevek to write me an allegory that paints a childish picture of LVM and it's function. I also ask what the original system looked like, so I can better understand the rationale of an LVM.</p>
+                <!--- Image 13.1 --->
+                <section class="image-grid">
+                <div class="image-card">
+                    <h3>LVM Allegory 1</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_13-1.png" alt="LVM Story 1" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_13-1.png" alt="LVM Story 1" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+                <!--- Image 13.2 --->
+                 <div class="image-card">
+                    <h3>LVM Allegory 2</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_13-2.png" alt="LVM Story 2" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_13-2.png" alt="LVM Story 2" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+                <!--- Image 13.3 --->
+                 <div class="image-card">
+                    <h3>LVM Allegory 3</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_13-3.png" alt="LVM Story 3" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_12-3.png" alt="LVM Story 3" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+                <!--- Image 13.4 --->
+                 <div class="image-card">
+                    <h3>LVM Allegory 4</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_13-4.png" alt="LVM Story 4" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_13-4.png" alt="LVM Story 4" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+                <!--- Image 13.5 --->
+                 <div class="image-card">
+                    <h3>LVM Allegory 5</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_13-5.png" alt="LVM Story 5" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_13-5.png" alt="LVM Story 5" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+             <!--- Image 13.6 --->
+                 <div class="image-card">
+                    <h3>Life Before LVM 1</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_13-6.png" alt="Before LVM 1" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_13-6.png" alt="Before LVM 1" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+            <!--- Image 13.7 --->
+                 <div class="image-card">
+                    <h3>Life Before LVM 2</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_13-7.png" alt="Before LVM 2" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_13-7.png" alt="Before LVM 2" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+                      
+            <!--- Image 13.8 --->
+                 <div class="image-card">
+                    <h3>Life Before LVM 3</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_13-8.png" alt="Before LVM 3" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_13-8.png" alt="Before LVM 3" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+             
+            <!--- Image 13.9 --->
+                 <div class="image-card">
+                    <h3>Life Before LVM 4</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_13-9.png" alt="Before LVM 4" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_13-9.png" alt="Before LVM 4" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>    
+            
+            <!--- Image 13.10 --->
+                 <div class="image-card">
+                    <h3>Life Before LVM 5</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_13-10.png" alt="Before LVM 5" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_13-10.png" alt="Before LVM 5" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+             
+            <!--- Image 13.11 --->
+                 <div class="image-card">
+                    <h3>Life Before LVM 6</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_13-11.png" alt="Before LVM 6" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_13-11.png" alt="Before LVM 6" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>    
+            </li>   
+
+            <!--- Step 14 --->
+            <li>
+                <p><strong>It's the 21st century and I have a super intelligence at my disposal. I may as well say everything I've learned back to make certain I'm understanding things correctly.</strong> I tell Shevek what I believe to be my understanding. As always, I fall short. He ellaborates I am still missing some crucial details about GRUB, what it does, it's limitations, and why the UUID is needed at all.</p>
+                <!--- Image 14.1 --->
+                <section class="image-grid">
+                <div class="image-card">
+                    <h3>GRUB Simplified 1</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_14-1.png" alt="GRUB Simplified 1" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_14-1.png" alt="GRUB Simplified 1" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+                <!--- Image 14.2 --->
+                 <div class="image-card">
+                    <h3>GRUB Simplified 2</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_14-2.png" alt="GRUB Simplified 2" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_14-2.png" alt="GRUB Simplified 2" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+                <!--- Image 14.3 --->
+                 <div class="image-card">
+                    <h3>GRUB Simplified 3</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_14-3.png" alt="GRUB Simplified 3" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_14-3.png" alt="GRUB Simplified 3" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+                <!--- Image 14.4 --->
+                 <div class="image-card">
+                    <h3>GRUB Simplified 4</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_14-4.png" alt="GRUB Simplified 4" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_14-4.png" alt="GRUB Simplified 4" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+
+                <!--- Image 14.5 --->
+                 <div class="image-card">
+                    <h3>GRUB Simplified 5</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_14-5.png" alt="GRUB Simplified 5" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-24_booting/Fig_14-5.png" alt="GRUB Simplified 5" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>   
+             </li>
+            </ol>
+          </div>
+        </details>
+
+        <!-- Conclusions -->
+        <details class="panel" id="conclusions">
+          <summary>Conclusions</summary>
+          <div class="panel-body">
+              <p>Shevek's lab was nothing of particular excitement. We have made it through the first section of the lab: Wrong Root UUID. I am not certain that the goals of this lab were accomplished in the ways that were intended. However, I have learned more in depth, what GRUB actually does and what it contains. I have also learned some of the logic of an LVM, all be it the details still foggy. In due time, I'm certain, their nature will reveal themselves to me. The next section is: Broken <code>initrafms</code>. Perhaps the LVM will make itself more known in the coming sections?</p>
+          </div>
+        </details>
+
+        <!-- Haiku -->
+        <details class="panel" id="haiku">
+          <summary>Shevek's Haiku</summary>
+          <div class="panel-body">
+              <p>Boot paths in the dark<br>
+              Names fade, numbers guide the root<br>
+Silent disks remember</p>
+          </div>
+        </details>
+
+        <!--- Sandbox --->
+        <details class="panel" id="sandbox">
+            <summary>Sandbox</summary>
+            <div class="panel-body">
+                <p><a href="https://github.com/trout-ninja/asktheargus/releases/download/boot_fault_sandbox_V1.0.0/boot_fault_lab.zip">Shevek7</a></p>
+            </div>
+        </details>
+        </section>
+    </main>
+  </body>
+</html>
+
