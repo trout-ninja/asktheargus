@@ -1,0 +1,1814 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Booting Sandbox Part II</title>
+
+    <link rel="canonical" href="https://www.asktheargus.com/entries/2026/01/2026-01-26_broken_initramfs.html" />
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+
+  <!-- Script for Clicking out of Images -->
+  <script>
+    window.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll(".entry-image details").forEach((details) => {
+        const overlay = details.querySelector(".fullscreen");
+        const closeBtn = details.querySelector(".fs-close");
+        const fullImg = overlay ? overlay.querySelector("img") : null;
+
+        if (!overlay) return;
+
+        if (closeBtn) {
+          closeBtn.addEventListener("pointerdown", (e) => {
+            e.preventDefault();
+            details.removeAttribute("open");
+          });
+        }
+
+        overlay.addEventListener("pointerdown", (e) => {
+          if (fullImg && e.target === fullImg) return;
+          details.removeAttribute("open");
+        });
+      });
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key !== "Escape") return;
+        document.querySelectorAll(".entry-image details[open]").forEach((d) => {
+          d.removeAttribute("open");
+        });
+      });
+    });
+  </script>
+
+  <body>
+    <main class="entry-page">
+
+      <!-- Title / Subtitle -->
+      <header class="entry-top">
+        <a href="../../../index.html">&larr; Back to Home</a>
+        <p class="site-title">Ask the Argus</p>
+        <h1 class="entry-title">Booting Sandbox Part II</h1>
+        <p class="entry-subtitle">Experimenting With <code>initramfs</code></p>
+      </header>
+
+      <!-- Synopsis -->
+      <section class="synopsis">
+        <h2>Synopsis</h2>
+        <p>In this lab I proceed to the second task of Shevek's boot fault lab: Broken initramfs. The lab can be found at the bottom of this page for download or in the sandbox archive listed on the homepage. As is most always the case, I start completely blind and clueless as to what to do, or as to what <code>initramfs</code> really is for that matter. I have Shevek make me a lesson plan and follow along.</p>
+      </section>
+
+      <!-- Collapsible Sections -->
+      <section class="entry-sections" aria-label="Expandable sections">
+
+        <!-- Questions -->
+        <details class="panel" id="questions">
+          <summary>Questions &amp; Objectives</summary>
+          <div class="panel-body">
+            <ol class="process-list">
+              <li>I want to understand what <code>initramfs</code> is and it's role in booting.</li>
+              <li>I will to deliberately miscofigure <code>initramfs</code> to see it's effects.</li>
+              <li>I will then reconfigure the system so that it is returned to normal operation.</li>
+            </ol>
+          </div>
+        </details>
+
+        <!-- Process -->
+        <details class="panel" id="process">
+          <summary>Process</summary>
+          <div class="panel-body">
+            <ol class="process-list">
+
+              <!-- Step 1 -->
+            <ol>
+             <li>
+                 <p><strong>As is always the case, since I didn't request a lesson with my lab, I don't get one.</strong> There is no context or guide stage in the lab. Just a few obscure reference to file-paths. I have Shevek make me a lesson plan so I have a shot at learning in this sandbox.</p>
+                 
+                <!--- Iimage 1.1 --->
+                <section class="image-grid">
+                <div class="image-card">
+                    <h3>What Did You Hand Me, Shevek?</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_1-1.png" alt="Sheveks Shitty Lab" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_1-1.png" alt="Sheveks Shitty Lab" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+            
+                <!--- Image 1.2 --->
+                <div class="image-card">
+                    <h3><code>initramfs</code> Lab 1</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_1-2.png" alt="initramfs Lab 1" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_1-2.png" alt="initramfs Lab 1" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+                
+                <!--- Image 1.3 --->
+                <div class="image-card">
+                    <h3><code>initramfs</code> Lab 2</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_1-3.png" alt="intramfs Lab 2" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_1-3.png" alt="intramfs Lab 2" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Image 1.4 --->
+                <div class="image-card">
+                    <h3><code>initramfs</code> Lab 3</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_1-4.png" alt="initramfs Lab 3" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_1-4.png" alt="initramfs Lab 3" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+            
+                <!--- Image 1.5 --->
+                <div class="image-card">
+                    <h3><code>initramfs</code> Lab 4</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_1-5.png" alt="initramfs Lab 4" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_1-5.png" alt="initramfs Lab 4" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Image 1.6 --->
+                <div class="image-card">
+                    <h3><code>initramfs</code> Lab 5</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_1-6.png" alt="initramfs Lab 5" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_1-6.png" alt="initramfs Lab 5" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>                
+            
+               <!--- Image 1.7 --->
+                <div class="image-card">
+                    <h3><code>initramfs</code> Lab 6</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_1-7.png" alt="initramfs Lab 6" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_1-7.png" alt="initramfs Lab 6" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>                
+
+               <!--- Image 1.8 --->
+                <div class="image-card">
+                    <h3><code>initramfs</code> Lab 7</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_1-8.png" alt="initramfs Lab 7" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_1-8.png" alt="initramfs Lab 7" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>                
+
+              <!--- Image 1.9 --->
+                <div class="image-card">
+                    <h3><code>initramfs</code> Lab 8</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_1-9.png" alt="initramfs Lab 8" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_1-9.png" alt="initramfs Lab 8" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>                
+
+               <!--- Image 1.10 --->
+                <div class="image-card">
+                    <h3><code>initramfs</code> Lab 9</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_1-10.png" alt="initramfs Lab 9" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_1-10.png" alt="initramfs Lab 9" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>                
+
+
+             </li>
+              
+             <!--- Step 2 --->
+              <li>  
+                  <p><strong>In order to do the lab, I need to damage or remove the <code>initramfs</code> image, per what Shevek states.</strong> Unfortunately at no point in time does he make it apparent how I am supposed to do this. I consult with Shevek. Shevek, how do we destroy my virtual machine? He provides me three options for doing so.</p>
+                
+              <!--- Image 2.1 --->
+                <section class="image-grid">
+                <div class="image-card">
+                    <h3>Damaging <code>initramfs</code> 1</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_2-1.png" alt="Damagin initramfs 1" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_2-1.png" alt="Damaging initramfs 1" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+            
+                <!--- Image 2.2 --->
+                <div class="image-card">
+                    <h3>Damaging <code>initramfs</code> 2</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_2-2.png" alt="Damaging initramfs 2" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_2-2.png" alt="Damaging initramfs 2" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+                
+                <!--- Image 2.3 --->
+                <div class="image-card">
+                    <h3>Damaging <code>initramfs</code> 3</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_2-3.png" alt="Damaging initramfs 3" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_2-3.png" alt="Damaging initramfs 3" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+              
+                 <!--- Image 2.4 --->
+                <div class="image-card">
+                    <h3>Damaging <code>initramfs</code> 4</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_2-4.png" alt="Damaging initramfs 4" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_2-4.png" alt="Damaging initramfs 4" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+                
+                <!--- Image 2.5 --->
+                <div class="image-card">
+                    <h3>Damaging <code>initramfs</code> 5</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_2-5.png" alt="Damaging initramfs 5" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_2-5.png" alt="Damaging initramfs 5" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                 <!--- Image 2.6 --->
+                <div class="image-card">
+                    <h3>Damaging <code>initramfs</code> 6</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_2-6.png" alt="Damaging initramfs 6" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_2-6.png" alt="Damaging initramfs 6" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+
+              </li>
+                
+              <!--- Step 3 --->
+           <li>
+               <p><strong>I proceed to set up the conditions for the fault. I follow Sheveks instructions to the detail. But, yet again, I encounter a limitation to the lab. Despite having followed instructions and simply changed the name of <code>initramfs</code>, I am not yielding an emergency shell.</strong> The screen sits idly. I attempted a <code>force restart</code> to no avail. Shevek goes on to explain we created an even more catastrophic failure than just <code>initramfs</code>. The <code>Kernel</code> can not even start the <code>initramfs</code> environment. Not to worry, there is a solution.</p>
+                 
+                <!--- Iimage 3.1 --->
+                <section class="image-grid">
+                <div class="image-card">
+                    <h3>Changing the Name of <code>initramfs</code></h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_3-1.png" alt="Name Change initramfs" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_3-1.png" alt="Name Change initramfs" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+            
+                <!--- Image 3.2 --->
+                <div class="image-card">
+                    <h3>Rebooting 1</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_3-2.png" alt="Rebooting 1" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_3-2.png" alt="Rebooting 1" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+                
+                <!--- Image 3.3 --->
+                <div class="image-card">
+                    <h3>Rebooting 2</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_3-3.png" alt="Rebooting 2" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_3-3.png" alt="Rebooting 2" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Image 3.4 --->
+                <div class="image-card">
+                    <h3>Rebooting 3</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_3-4.png" alt="Rebooting 3" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_3-4.png" alt="Rebooting 3" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+            
+                <!--- Image 3.5 --->
+                <div class="image-card">
+                    <h3>Booting Fault Explained 1</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_3-5.png" alt="Booting Fault 1" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_3-5.png" alt="Booting Fault 1" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Image 3.6 --->
+                <div class="image-card">
+                    <h3>Booting Fault Explained 2</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_3-6.png" alt="Booting Fault 2" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_3-6.png" alt="Booting Fault 2" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>                
+            
+               <!--- Image 3.7 --->
+                <div class="image-card">
+                    <h3>Booting Fault Explained 3</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_3-7.png" alt="Booting Fault 2" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_3-7.png" alt="Booting Fault 2" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>                
+
+               <!--- Image 3.8 --->
+                <div class="image-card">
+                    <h3>Booting Fault Explained 4</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_3-8.png" alt="Booting Fault 3" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_3-8.png" alt="Booting Fault 3" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>                
+
+              <!--- Image 3.9 --->
+                <div class="image-card">
+                    <h3>Booting Fault Explained 5</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_3-9.png" alt="Booting Fault 4" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_3-9.png" alt="Booting Fault 4" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>                
+
+               <!--- Image 3.10 --->
+                <div class="image-card">
+                    <h3>Booting Fault Explained 6</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_3-10.png" alt="Booting Fault 5" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_3-10.png" alt="Booting Fault 5" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>                
+
+
+             </li>
+
+            <!--- Step 4 --->
+           <li>
+               <p><strong>I follow the steps Shevek lays out for me and it works.</strong> When prompted in the GRUB menu to select a <code>Kernel</code>, I select the one whose <code>initramfs</code> has not been corrupted. I'm not certain HOW this gives me access to my directory, but it works. I change the name of <code>initramfs</code> back to it's original state. I reboot, select the original <code>Kernel</code> and it works as it did before.</p>
+                 
+                <!--- Iimage 4.1 --->
+                <section class="image-grid">
+                <div class="image-card">
+                    <h3>Using the "Rescue" <code>Kernel</code> 1</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_4-1.png" alt="Rescue Kernel 1" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_4-1.png" alt="Rescue Kernel 1" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+            
+                <!--- Image 4.2 --->
+                <div class="image-card">
+                    <h3>Using the "Rescue" <code>Kernel</code> 2</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_4-2.png" alt="Rescue Kernel 2" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_4-2.png" alt="Rescue Kernel 2" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+                
+                <!--- Image 4.3 --->
+                <div class="image-card">
+                    <h3>Using the "Rescue" <code>Kernel</code> 3</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_4-3.png" alt="Rescue Kernel 3" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_4-3.png" alt="Rescue Kernel 3" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Image 4.4 --->
+                <div class="image-card">
+                    <h3>Rebooting With the Original <code>Kernel</code></h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_4-4.png" alt="Original Kernel" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_4-4.png" alt="Original Kernel" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+            
+                <!--- Image 4.5 --->
+                <div class="image-card">
+                    <h3>Booting Success</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_4-5.png" alt="Booting Success" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_4-5.png" alt="Booting Success" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+             </li>
+
+
+           <!--- Step 5 --->
+           <li>
+               <p><strong>I feel a little shaky on what a driver is and, seeing as to how they appear to play such a vital role in booting, I ask Shevek to elaborate on what they are.</strong> I appear to have the correct general understanding, but as always, Shevek refines it.</p> 
+               
+                <!--- Iimage 5.1 --->
+                <section class="image-grid">
+                <div class="image-card">
+                    <h3>Drivers Explained 1</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_5-1.png" alt="Drivers 1" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_5-1.png" alt="Drivers 1" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+            
+                <!--- Image 5.2 --->
+                <div class="image-card">
+                    <h3>Drivers Explained 2</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_5-2.png" alt="Drivers 2" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_5-2.png" alt="Drivers 2" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+                
+                <!--- Image 5.3 --->
+                <div class="image-card">
+                    <h3>Drivers Explained 3</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_5-3.png" alt="Drivers 3" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_5-3.png" alt="Drivers 3" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Image 5.4 --->
+                <div class="image-card">
+                    <h3>Drivers Explained 4</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_5-4.png" alt="Drivers 4" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_5-4.png" alt="Drivers 4" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+             </li>
+
+              <!--- Step 6 --->
+           <li>
+               <p><strong>I return to the <code>initramfs</code> lab, prompt Shevek that I have reconfigured my VM to boot correctly, and proceed.</strong> I employ the command <code>sudo dracut --omit lvm --force</code>. This creates a new <code>initramfs</code>, leaves out the LVM module, and will cause boot to fail into dracut. I will ask for more clarification on how that command works in the next section.</p>
+                   <!--- Iimage 6.1 --->
+                <section class="image-grid">
+                <div class="image-card">
+                    <h3>Forcing <code>dracut</code> 1</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_6-1.png" alt="Forcing dracut 1" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_6-1.png" alt="Forcing dracut 1" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+            
+                <!--- Image 6.2 --->
+                <div class="image-card">
+                    <h3>Forcing <code>dracut</code> 2</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_6-2.png" alt="Forcing dracut 2" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_6-2.png" alt="Forcing dracut 2" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+                
+                <!--- Image 6.3 --->
+                <div class="image-card">
+                    <h3>Forcing <code>dracut</code> 3</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_6-3.png" alt="Forcing dracut 3" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_6-3.png" alt="Forcing dracut 3" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Image 6.4 --->
+                <div class="image-card">
+                    <h3>Forcing <code>dracut</code> 4</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_6-4.png" alt="Forcing dracut 4" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_6-4.png" alt="Forcing dracut 4" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+            
+                <!--- Image 6.5 --->
+                <div class="image-card">
+                    <h3>Forcing <code>dracut</code> 5</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_6-5.png" alt="Forcing dracut 5" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_6-5.png" alt="Forcing dracut 5" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Image 6.6 --->
+                <div class="image-card">
+                    <h3>Forcing <code>dracut</code> 6</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_6-6.png" alt="Forcing dracut 6" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_6-6.png" alt="Forcing dracut 6" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>                
+            
+               <!--- Image 6.7 --->
+                <div class="image-card">
+                    <h3>Forcing <code>dracut</code> 7</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_6-7.png" alt="Forcing dracut 7" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_6-7.png" alt="Forcing dracut 7" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>                
+
+               <!--- Image 6.8 --->
+                <div class="image-card">
+                    <h3>Forcing <code>dracut</code> 8</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_6-8.png" alt="Forcing dracut 8" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_6-8.png" alt="Forcing dracut 8" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>     
+             </li>
+
+            <!--- Step 7 --->
+           <li>
+               <p><strong>The command <code>sudo dracut --omit lvm --force</code> leaves a thorn in my side.</strong> I am not the type of person to blindly type commands I have no comprehension of. I also know philosophy majors that would struggle to comprehend a <code>man</code> page. I consult Shevek to break down the command, piece by piece.</p>
+                   <!--- Iimage 7.1 --->
+                <section class="image-grid">
+                <div class="image-card">
+                    <h3>Rebuilding <code>initramfs</code> 1</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_7-1.png" alt="initramfs Rebuild 1" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_7-1.png" alt="initramfs Rebuild 1" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+            
+                <!--- Image 7.2 --->
+                <div class="image-card">
+                    <h3>Rebuilding <code>initramfs</code> 2</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_7-2.png" alt="initramfs Rebuild 2" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_7-2.png" alt="initramfs Rebuild 2" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+                
+                <!--- Image 7.3 --->
+                <div class="image-card">
+                    <h3>Rebuilding <code>initramfs</code> 3</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_7-3.png" alt="initramfs Rebuild 3" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_7-3.png" alt="initramfs Rebuild 3" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Image 7.4 --->
+                <div class="image-card">
+                    <h3>Rebuilding <code>initramfs</code> 4</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_7-4.png" alt="initramfs Rebuild 4" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_7-4.png" alt="initramfs Rebuild 4" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+            
+                <!--- Image 7.5 --->
+                <div class="image-card">
+                    <h3>Rebuilding <code>initramfs</code> 5</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_7-5.png" alt="initramfs Rebuild 5" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_7-5.png" alt="initramfs Rebuild 5" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+             </li>
+
+            <!--- Step 8 --->
+           <li>
+               <p><strong>I return to Sheveks new lab and proceed with his instructions from <code>dracut</code>. However, I encounter yet antoher speed bump.</strong> None of the commands I'm required to use work. What's going on here?</p>
+                   <!--- Iimage 8.1 --->
+                <section class="image-grid">
+                <div class="image-card">
+                    <h3>New Lab Process 1</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_8-1.png" alt="New Lab 1" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_8-1.png" alt="New Lab 1" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+            
+                <!--- Image 8.2 --->
+                <div class="image-card">
+                    <h3>New Lab Process 2</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_8-2.png" alt="New Lab 2" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_8-2.png" alt="New Lab 2" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+                
+                <!--- Image 8.3 --->
+                <div class="image-card">
+                    <h3>New Lab Process 3</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_8-3.png" alt="New Lab 3" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_8-3.png" alt="New Lab 3" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Image 8.4 --->
+                <div class="image-card">
+                    <h3>New Lab Process 4</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_8-4.png" alt="New Lab 4" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_8-4.png" alt="New Lab 4" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+            
+                <!--- Image 8.5 --->
+                <div class="image-card">
+                    <h3>New Lab Process 5</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_8-5.png" alt="New Lab 5" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_8-5.png" alt="New Lab 5" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Image 8.6 --->
+                <div class="image-card">
+                    <h3>New Lab Process 6</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_8-6.png" alt="New Lab 6" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_8-6.png" alt="New Lab 6" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>                
+            
+               <!--- Image 8.7 --->
+                <div class="image-card">
+                    <h3>Minor Command Issues</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_8-7.png" alt="No Commands" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_8-7.png" alt="No Commands" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>                
+             </li>
+
+        <!--- Step 9 --->
+           <li>
+               <p><strong>Shevek comes up with a way around this, or so I think. He instrcuts me to call commands directly by their <code>PATH</code>.</strong> I try and do this, but that doesn't even work. Something is seriously wrong here. Shevek keeps overlooking details. This lab only has experiential and exposure value. Nothing about it is working the way it's supposed to.</p>
+                   <!--- Iimage 9.1 --->
+                <section class="image-grid">
+                <div class="image-card">
+                    <h3>Commands by <code>PATH</code> 1</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_9-1.png" alt="Command by PATH 1" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_9-1.png" alt="Command by PATH 1" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+            
+                <!--- Image 9.2 --->
+                <div class="image-card">
+                    <h3>Commands by <code>PATH</code> 2</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_9-2.png" alt="Command by PATH 2" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_9-2.png" alt="Command by PATH 2" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+                
+                <!--- Image 9.3 --->
+                <div class="image-card">
+                    <h3>Commands by <code>PATH</code> 3</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_9-3.png" alt="Command by PATH 3" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_9-3.png" alt="Command by PATH 3" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+           
+                <!--- Image 9.4 --->
+                <div class="image-card">
+                    <h3>Still Not Working, Shevek</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_9-4.png" alt="No Commands" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_9-4.png" alt="No Commands" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+             </li>
+
+            <!--- Step 10 --->
+           <li>
+               <p><strong>Not to worry, Shevek has another solution that sure to at least bring my system back to it's original state AND he has amother method for simulating failure to <code>dracut</code>.</strong> I could just use snapshot, but I would like to learn how to recover the system in such a situation. We disabled the LVM. It contains all the commands. How did Shevek not see this coming? Or is he deliberately doing this? I wonder. I follow his lead and boot from CD-ROM.</p>
+               <!--- Iimage 10.1 --->
+                <section class="image-grid">
+                <div class="image-card">
+                    <h3>System Rescue Via CDROM 1</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_10-1.png" alt="System Rescue 1" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_10-1.png" alt="System Rescue 1" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+            
+                <!--- Image 10.2 --->
+                <div class="image-card">
+                    <h3>System Rescue Via CDROM 2</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_10-2.png" alt="System Rescue 2" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_10-2.png" alt="System Rescue 2" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+                
+                <!--- Image 10.3 --->
+                <div class="image-card">
+                    <h3>System Rescue Via CDROM 3</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_10-3.png" alt="System Rescue 3" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_10-3.png" alt="System Rescue 3" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Image 10.4 --->
+                <div class="image-card">
+                    <h3>System Rescue Via CDROM 4</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_10-4.png" alt="System Rescue 4" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_10-4.png" alt="System Rescue 4" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+            
+                <!--- Image 10.5 --->
+                <div class="image-card">
+                    <h3>System Rescue Via CDROM 5</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_10-5.png" alt="System Rescue 5" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_10-5.png" alt="System Rescue 5" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+            
+               <!--- Iimage 10.6 --->
+                <div class="image-card">
+                    <h3>System Rescue Via CDROM 6</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_10-6.png" alt="System Rescue 6" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_10-6.png" alt="System Rescue 6" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+            
+                <!--- Image 10.7 --->
+                <div class="image-card">
+                    <h3>System Rescue Via CDROM 7</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_10-7.png" alt="System Rescue 7" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_10-7.png" alt="System Rescue 7" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+                
+                <!--- Image 10.8 --->
+                <div class="image-card">
+                    <h3>System Rescue Via CDROM 8</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_10-8.png" alt="System Rescue 8" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_10-8.png" alt="System Rescue 8" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Image 10.9 --->
+                <div class="image-card">
+                    <h3>System Rescue Via CDROM 9</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_10-9.png" alt="System Rescue 9" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_10-9.png" alt="System Rescue 9" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+           
+            <!--- Image 10.10 --->
+                <div class="image-card">
+                    <h3>System Rescue Via CDROM 10</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_10-10.png" alt="System Rescue 10" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_10-10.png" alt="System Rescue 10" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+              </li>
+
+           <!--- Step 11 --->
+           <li>
+               <p><strong>Before I proceed with using <code>chroot</code> in order to reapir <code>initramfs</code>, I would like to better understand what it is exactly it does, and what it is used for.</strong> Shevek explains <code>chroot</code> exists for just such a purpose.</p>
+
+               <!--- Iimage 11.1 --->
+                <section class="image-grid">
+                <div class="image-card">
+                    <h3><code>chroot</code> Explained 1</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_11-1.png" alt="chroot 1" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_11-1.png" alt="chroot 1" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+            
+                <!--- Image 11.2 --->
+                <div class="image-card">
+                    <h3>chroot</code> Explained 2</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_11-2.png" alt="chroot 2" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_11-2.png" alt="chroot 2" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+                
+                <!--- Image 11.3 --->
+                <div class="image-card">
+                    <h3>chroot</code> Explained 3</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_11-3.png" alt="chroot 3" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_11-3.png" alt="chroot 3" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Image 11.4 --->
+                <div class="image-card">
+                    <h3>chroot</code> Explained 4</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_11-4.png" alt="chroot 4" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_11-4.png" alt="chroot 4" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+            
+                <!--- Image 11.5 --->
+                <div class="image-card">
+                    <h3>chroot</code> Explained 5</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_11-5.png" alt="chroot 5" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_11-5.png" alt="chroot 5" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+            
+               <!--- Iimage 11.6 --->
+                <div class="image-card">
+                    <h3>chroot</code> Explained 6</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_11-6.png" alt="chroot 6" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_11-6.png" alt="chroot 6" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+             </li> 
+             
+             <!--- Step 12 --->
+             <li>
+                 <p><strong>I attempt Sheveks final lab with tremendous success.</strong> <code>dracut</code> loads as required. I am then able to activate LVM manually to access the tools I need. I am then able to <code>mount root</code>, prep <code>chroot</code>, <code>chroot</code> and rebuild <code>initrafms</code>. It took a long time to get here. I still have questions.<p>
+
+                 <!--- Iimage 12.1 --->
+                <section class="image-grid">
+                <div class="image-card">
+                    <h3><code>initramfs</code> Recovery 1</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_12-1.png" alt="initrafms Recovery 1" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_12-1.png" alt="initrafms Recovery 1" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+             
+                <!--- Iimage 12.2 --->
+                <div class="image-card">
+                    <h3><code>initramfs</code> Recovery 2</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_12-2.png" alt="initrafms Recovery 2" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_12-2.png" alt="initrafms Recovery 2" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Iimage 12.3 --->
+                <div class="image-card">
+                    <h3><code>initramfs</code> Recovery 3</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_12-3.png" alt="initrafms Recovery 3" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_12-3.png" alt="initrafms Recovery 3" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                 <!--- Iimage 12.4 --->
+                <div class="image-card">
+                    <h3><code>initramfs</code> Recovery 4</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_12-4.png" alt="initrafms Recovery 4" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_12-4.png" alt="initrafms Recovery 4" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                         <!--- Iimage 12.5 --->
+                <div class="image-card">
+                    <h3><code>initramfs</code> Recovery 5</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_12-5.png" alt="initrafms Recovery 5" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_12-5.png" alt="initrafms Recovery 5" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Iimage 12.6 --->
+                <div class="image-card">
+                    <h3><code>initramfs</code> Recovery 6</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_12-6.png" alt="initrafms Recovery 6" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_12-6.png" alt="initrafms Recovery 6" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Iimage 12.7 --->
+                <div class="image-card">
+                    <h3><code>initramfs</code> Recovery 7</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_12-7.png" alt="initrafms Recovery 7" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_12-7.png" alt="initrafms Recovery 7" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Iimage 12.8 --->
+                <div class="image-card">
+                    <h3><code>initramfs</code> Recovery 8</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_12-8.png" alt="initrafms Recovery 8" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_12-8.png" alt="initrafms Recovery 8" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                 <!--- Iimage 12.9 --->
+                <div class="image-card">
+                    <h3><code>initramfs</code> Recovery 9</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_12-9.png" alt="initrafms Recovery 9" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_12-9.png" alt="initrafms Recovery 9" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Iimage 12.10 --->
+                <div class="image-card">
+                    <h3><code>initramfs</code> Recovery 10</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_12-10.png" alt="initrafms Recovery 10" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_12-10.png" alt="initrafms Recovery 10" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Iimage 12.11 --->
+                <div class="image-card">
+                    <h3><code>initramfs</code> Recovery 11</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_12-11.png" alt="initrafms Recovery 11" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_12-11.png" alt="initrafms Recovery 11" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Iimage 12.12 --->
+                <div class="image-card">
+                    <h3><code>initramfs</code> Recovery 12</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_12-12.png" alt="initrafms Recovery 12" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_12-12.png" alt="initrafms Recovery 12" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Iimage 12.13 --->
+                <div class="image-card">
+                    <h3><code>initramfs</code> Recovery 13</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_12-13.png" alt="initrafms Recovery 13" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_12-13.png" alt="initrafms Recovery 13" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Iimage 12.14 --->
+                <div class="image-card">
+                    <h3><code>initramfs</code> Recovery 14</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_12-14.png" alt="initrafms Recovery 14" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_12-14.png" alt="initrafms Recovery 14" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Iimage 12.15 --->
+                <div class="image-card">
+                    <h3><code>initramfs</code> Recovery 15</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_12-15.png" alt="initrafms Recovery 15" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_12-15.png" alt="initrafms Recovery 15" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+             </li>
+
+        <!--- Step 13 --->
+             <li>
+                <p><strong>I'd love to say I know what I just did, but I simply don't understand a lot of it.</strong> I consult Shevek regarding what's going on with the <code>mount</code> commands. He explains why they are neccessary before we can employ <code>chroot</code>.</p>
+                <!--- Image 13.1 ---> 
+                <section class="image-grid">
+                <div class="image-card">
+                    <h3><code>mount</code> Commands Explained 1</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_13-1.png" alt="mount explained 1" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_13-1.png" alt="mount Explained 1" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Image 13.2 --->
+                <div class="image-card">
+                    <h3><code>mount</code> Commands Explained 2</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_13-2.png" alt="mount explained 2" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_13-2.png" alt="mount Explained 2" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Image 13.3 --->
+                <div class="image-card">
+                    <h3><code>mount</code> Commands Explained 3</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_13-3.png" alt="mount explained 3" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_13-3.png" alt="mount Explained 3" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Image 13.4 --->
+                <div class="image-card">
+                    <h3><code>mount</code> Commands Explained 4</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_13-4.png" alt="mount explained 4" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_13-4.png" alt="mount Explained 4" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Image 13.5 --->
+                <div class="image-card">
+                    <h3><code>mount</code> Commands Explained 5</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_13-5.png" alt="mount explained 5" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_13-5.png" alt="mount Explained 5" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Image 13.6 --->
+                  <div class="image-card">
+                    <h3><code>mount</code> Commands Explained 6</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_13-6.png" alt="mount explained 6" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_13-6.png" alt="mount Explained 6" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+            </li>
+            <!--- Step 14 --->
+            <li>
+                <p><strong>As I will be making a habit of doing to make certain I'm actually learning something, I repeat back to Shevek my new found understanding of to the objectives stated at the beginning of the lab. For a change, I am mostly right.</p> I still appreciate how Shevek refines what I've learned so it's more comprehensible.</strong>
+    
+                <!--- Image 14.1 --->
+                <section class="image-grid">
+                <div class="image-card">
+                    <h3>Objectives Learned 1</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_14-1.png" alt="Objectives Learned 1" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_14-1.png" alt="Objectives Learned 1" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Image 14.2 --->
+                <div class="image-card">
+                    <h3>Objectives Learned 2</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_14-2.png" alt="Objectives Learned 2" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_14-2.png" alt="Objectives Learned 2" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+          
+                <!--- Image 14.3 --->
+                <div class="image-card">
+                    <h3>Objectives Learned 3</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_14-3.png" alt="Objectives Learned 3" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_14-3.png" alt="Objectives Learned 3" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Image 14.4 --->
+                <div class="image-card">
+                    <h3>Objectives Learned 4</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_14-4.png" alt="Objectives Learned 4" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_14-4.png" alt="Objectives Learned 4" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                 <!--- Image 14.5 --->
+                <div class="image-card">
+                    <h3>Objectives Learned 5</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_14-5.png" alt="Objectives Learned 5" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-26_broken_initramfs/Fig_14-5.png" alt="Objectives Learned 5" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+             </li>
+            </ol>
+        </div>
+        </details>
+        <!-- Conclusions -->
+        <details class="panel" id="conclusions">
+          <summary>Conclusions</summary>
+          <div class="panel-body">
+              <p>Corrupting <code>initrafms</code> is no simple task when an LVM is involved. After three tries, Shevek and I managed to get the behavior of <code>dracut</code> we were looking for. Renaming <code>initramfs</code> only resulted in the Kernel being unable to locate <code>initrafms</code>. This resulted in no emergency shell and required the use of a rescue Kernel to salvage the system. Next, we tried muting the LVM at boot. This, however, resulted in having tools that existed somewhere on disc, but were unreachable nonetheless. This much more severe fault required booting from CDROM. Lastly, the effective method employed to get the desired results was modifying GRUB at boot.</p>
+          </div>
+        </details>
+
+        <!-- Haiku -->
+        <details class="panel" id="haiku">
+          <summary>Shevek's Haiku</summary>
+          <div class="panel-body">
+              <p>Tiny root in RAM<br>
+              Drivers waiting for first breath<br>
+Kernel finds its way</p>
+          </div>
+        </details>
+
+        <!--- Sandbox --->
+        <details class="panel" id="sandbox">
+            <summary>Sandbox</summary>
+            <div class="panel-body">
+                <p><a href="https://github.com/trout-ninja/asktheargus/releases/download/boot_fault_sandbox_V1.0.0/boot_fault_lab.zip">Shevek7</p>
+            </div>
+        </details>
+      </section>
+    </main>
+  </body>
+</html>
