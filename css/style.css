@@ -421,6 +421,13 @@ a.zoomable img {
   display: block;
 }
 
+html.fs-lock,
+body.fs-lock {
+  overflow: hidden;
+  height: 100%;
+}
+
+
 /* For Visual Consistency on Screenshots */
 .entry-image.summary-16x9 summary img {
   aspect-ratio: 16 / 9;
@@ -501,5 +508,27 @@ a.zoomable img {
 .entry-image details[open] .fullscreen {
   pointer-events: auto;
 }
-      
+
+/* Positioning for Shevek image of Log pages */
+.corner-avatar{
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  z-index: 9999;
+  display: inline-block;
+}
+
+.corner-avatar img{
+  display: block;
+  width: 90px;
+  height: auto;
+  border-radius: 14px;
+  border: 2px solid rgba(255, 107, 107, 0.35);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.28);
+}
+
+@media (max-width: 600px){
+  .corner-avatar img{ width: 60px; }
+}
+
 

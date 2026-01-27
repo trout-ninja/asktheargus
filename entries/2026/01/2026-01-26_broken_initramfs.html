@@ -11,36 +11,152 @@
   </head>
 
   <!-- Script for Clicking out of Images -->
-  <script>
-    window.addEventListener("DOMContentLoaded", () => {
-      document.querySelectorAll(".entry-image details").forEach((details) => {
-        const overlay = details.querySelector(".fullscreen");
-        const closeBtn = details.querySelector(".fs-close");
-        const fullImg = overlay ? overlay.querySelector("img") : null;
+<script>
+window.addEventListener("DOMContentLoaded", () => {
 
-        if (!overlay) return;
+  /* ===============================
+     EXISTING CLOSE / ESC LOGIC
+  =============================== */
 
-        if (closeBtn) {
-          closeBtn.addEventListener("pointerdown", (e) => {
-            e.preventDefault();
-            details.removeAttribute("open");
-          });
-        }
+  document.querySelectorAll(".entry-image details").forEach((details) => {
+    const overlay = details.querySelector(".fullscreen");
+    const closeBtn = details.querySelector(".fs-close");
+    const fullImg = overlay ? overlay.querySelector("img") : null;
 
-        overlay.addEventListener("pointerdown", (e) => {
-          if (fullImg && e.target === fullImg) return;
-          details.removeAttribute("open");
-        });
+    if (!overlay) return;
+
+    if (closeBtn) {
+      closeBtn.addEventListener("pointerdown", (e) => {
+        e.preventDefault();
+        details.removeAttribute("open");
       });
+    }
 
-      document.addEventListener("keydown", (e) => {
-        if (e.key !== "Escape") return;
-        document.querySelectorAll(".entry-image details[open]").forEach((d) => {
-          d.removeAttribute("open");
-        });
-      });
+    overlay.addEventListener("pointerdown", (e) => {
+      if (fullImg && e.target === fullImg) return;
+      details.removeAttribute("open");
     });
-  </script>
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    document.querySelectorAll(".entry-image details[open]")
+      .forEach(d => d.removeAttribute("open"));
+  });
+
+
+  /* ===============================
+     NEW GALLERY NAVIGATION LOGIC
+  =============================== */
+
+  function getGallery(detailsEl) {
+    const grid = detailsEl.closest(".image-grid");
+    return Array.from(grid.querySelectorAll("figure details"));
+  }
+
+  function openAt(list, idx) {
+    const n = list.length;
+    idx = ((idx % n) + n) % n;
+
+    list.forEach(d => d.removeAttribute("open"));
+    list[idx].setAttribute("open", "");
+  }
+
+  function getOpenIndex(list) {
+    return list.findIndex(d => d.hasAttribute("open"));
+  }
+
+    document.addEventListener("toggle", (e) => {
+        const d = e.target;
+        if (!(d instanceof HTMLDetailsElement)) return;
+        if (!d.closest(".image-grid")) return;
+
+        if (d.open) {
+    document.documentElement.classList.add("fs-lock");
+    document.body.classList.add("fs-lock");
+        } else {
+    // only unlock if NOTHING else is open
+        const anyOpen = document.querySelector(".image-grid details[open]");
+        if (!anyOpen) {
+      document.documentElement.classList.remove("fs-lock");
+      document.body.classList.remove("fs-lock");
+    }
+  }
+}, true);
+
+
+  // Arrow key navigation
+  document.addEventListener("keydown", (e) => {
+    if (!["ArrowRight", "ArrowLeft"].includes(e.key)) return;
+
+    const openDetails = document.querySelector(".image-grid details[open]");
+    if (!openDetails) return;
+
+    const list = getGallery(openDetails);
+    const idx = getOpenIndex(list);
+    if (idx === -1) return;
+
+    e.preventDefault();
+    openAt(list, e.key === "ArrowRight" ? idx + 1 : idx - 1);
+  });
+
+  // Scroll navigation (desktop)
+// Scroll navigation (desktop) — reliable
+let wheelLock = false;
+document.addEventListener("wheel", (e) => {
+  const openDetails = document.querySelector(".image-grid details[open]");
+  if (!openDetails) return;
+
+  // If an image is open, we own the scroll
+  e.preventDefault();
+  if (wheelLock) return;
+
+  const list = getGallery(openDetails);
+  const idx = getOpenIndex(list);
+  if (idx === -1) return;
+
+  // Trackpads may send horizontal deltas too
+  const delta = Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+  if (Math.abs(delta) < 10) return;
+
+  wheelLock = true;
+  openAt(list, delta > 0 ? idx + 1 : idx - 1);
+  setTimeout(() => (wheelLock = false), 220);
+}, { passive: false });
+
+
+  // Swipe navigation (mobile)
+  let startX = 0, startY = 0;
+  document.addEventListener("touchstart", (e) => {
+    if (!document.querySelector(".image-grid details[open]")) return;
+    if (!e.target.closest(".fullscreen")) return;
+
+    const t = e.changedTouches[0];
+    startX = t.clientX;
+    startY = t.clientY;
+  }, { passive: true });
+
+  document.addEventListener("touchend", (e) => {
+    const openDetails = document.querySelector(".image-grid details[open]");
+    if (!openDetails) return;
+    if (!e.target.closest(".fullscreen")) return;
+
+    const t = e.changedTouches[0];
+    const dx = t.clientX - startX;
+    const dy = t.clientY - startY;
+
+    if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return;
+
+    const list = getGallery(openDetails);
+    const idx = getOpenIndex(list);
+    if (idx === -1) return;
+
+    openAt(list, dx < 0 ? idx + 1 : idx - 1);
+  }, { passive: true });
+
+});
+</script>
+
 
   <body>
     <main class="entry-page">
@@ -56,7 +172,7 @@
       <!-- Synopsis -->
       <section class="synopsis">
         <h2>Synopsis</h2>
-        <p>In this lab I proceed to the second task of Shevek's boot fault lab: Broken initramfs. The lab can be found at the bottom of this page for download or in the sandbox archive listed on the homepage. As is most always the case, I start completely blind and clueless as to what to do, or as to what <code>initramfs</code> really is for that matter. I have Shevek make me a lesson plan and follow along.</p>
+        <p>In this lab I proceed to the second task of Shevek's boot fault lab: Broken initramfs. The lab can be found at the bottom of this page for download or in the sandbox archive listed on the homepage. As is most always the case, I start completely blind and clueless as to what to do, or as to what <code>initramfs</code> really is for that matter. I have Shevek make me a lesson plan and follow along. Along the way we encounter limitations to the lab created by my virtual machine using a LVM, I discover how to repair a broken system in three different ways as a consequence, and a means of activating dracut for the simulation is eventually arrived at.</p>
       </section>
 
       <!-- Collapsible Sections -->

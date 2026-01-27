@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Booting Sandbox Part III</title>
+
+    <link rel="canonical" href="https://www.asktheargus.com/entries/2026/01/2026-01-27_fstab.html" />
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+
+  <!-- Script for Clicking out of Images -->
+<script>
+window.addEventListener("DOMContentLoaded", () => {
+
+  /* ===============================
+     EXISTING CLOSE / ESC LOGIC
+  =============================== */
+
+  document.querySelectorAll(".entry-image details").forEach((details) => {
+    const overlay = details.querySelector(".fullscreen");
+    const closeBtn = details.querySelector(".fs-close");
+    const fullImg = overlay ? overlay.querySelector("img") : null;
+
+    if (!overlay) return;
+
+    if (closeBtn) {
+      closeBtn.addEventListener("pointerdown", (e) => {
+        e.preventDefault();
+        details.removeAttribute("open");
+      });
+    }
+
+    overlay.addEventListener("pointerdown", (e) => {
+      if (fullImg && e.target === fullImg) return;
+      details.removeAttribute("open");
+    });
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    document.querySelectorAll(".entry-image details[open]")
+      .forEach(d => d.removeAttribute("open"));
+  });
+
+
+  /* ===============================
+     NEW GALLERY NAVIGATION LOGIC
+  =============================== */
+
+  function getGallery(detailsEl) {
+    const grid = detailsEl.closest(".image-grid");
+    return Array.from(grid.querySelectorAll("figure details"));
+  }
+
+  function openAt(list, idx) {
+    const n = list.length;
+    idx = ((idx % n) + n) % n;
+
+    list.forEach(d => d.removeAttribute("open"));
+    list[idx].setAttribute("open", "");
+  }
+
+  function getOpenIndex(list) {
+    return list.findIndex(d => d.hasAttribute("open"));
+  }
+
+    document.addEventListener("toggle", (e) => {
+        const d = e.target;
+        if (!(d instanceof HTMLDetailsElement)) return;
+        if (!d.closest(".image-grid")) return;
+
+        if (d.open) {
+    document.documentElement.classList.add("fs-lock");
+    document.body.classList.add("fs-lock");
+        } else {
+    // only unlock if NOTHING else is open
+        const anyOpen = document.querySelector(".image-grid details[open]");
+        if (!anyOpen) {
+      document.documentElement.classList.remove("fs-lock");
+      document.body.classList.remove("fs-lock");
+    }
+  }
+}, true);
+
+
+  // Arrow key navigation
+  document.addEventListener("keydown", (e) => {
+    if (!["ArrowRight", "ArrowLeft"].includes(e.key)) return;
+
+    const openDetails = document.querySelector(".image-grid details[open]");
+    if (!openDetails) return;
+
+    const list = getGallery(openDetails);
+    const idx = getOpenIndex(list);
+    if (idx === -1) return;
+
+    e.preventDefault();
+    openAt(list, e.key === "ArrowRight" ? idx + 1 : idx - 1);
+  });
+
+  // Scroll navigation (desktop)
+// Scroll navigation (desktop) — reliable
+let wheelLock = false;
+document.addEventListener("wheel", (e) => {
+  const openDetails = document.querySelector(".image-grid details[open]");
+  if (!openDetails) return;
+
+  // If an image is open, we own the scroll
+  e.preventDefault();
+  if (wheelLock) return;
+
+  const list = getGallery(openDetails);
+  const idx = getOpenIndex(list);
+  if (idx === -1) return;
+
+  // Trackpads may send horizontal deltas too
+  const delta = Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+  if (Math.abs(delta) < 10) return;
+
+  wheelLock = true;
+  openAt(list, delta > 0 ? idx + 1 : idx - 1);
+  setTimeout(() => (wheelLock = false), 220);
+}, { passive: false });
+
+
+  // Swipe navigation (mobile)
+  let startX = 0, startY = 0;
+  document.addEventListener("touchstart", (e) => {
+    if (!document.querySelector(".image-grid details[open]")) return;
+    if (!e.target.closest(".fullscreen")) return;
+
+    const t = e.changedTouches[0];
+    startX = t.clientX;
+    startY = t.clientY;
+  }, { passive: true });
+
+  document.addEventListener("touchend", (e) => {
+    const openDetails = document.querySelector(".image-grid details[open]");
+    if (!openDetails) return;
+    if (!e.target.closest(".fullscreen")) return;
+
+    const t = e.changedTouches[0];
+    const dx = t.clientX - startX;
+    const dy = t.clientY - startY;
+
+    if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return;
+
+    const list = getGallery(openDetails);
+    const idx = getOpenIndex(list);
+    if (idx === -1) return;
+
+    openAt(list, dx < 0 ? idx + 1 : idx - 1);
+  }, { passive: true });
+
+});
+</script>
+
+
+  <body>
+       <a class="corner-avatar" href="/" aria-label="Ask the Argus home">
+        <img src="/images/Shevek.PNG" alt="Shevek" width="90" height="90">
+        </a>
+    <main class="entry-page">
+
+      <!-- Title / Subtitle -->
+      <header class="entry-top">
+        <a href="../../../index.html">&larr; Back to Home</a>
+        <p class="site-title">Ask the Argus</p>
+        <h1 class="entry-title">Booting Sandbox Part III</h1>
+        <p class="entry-subtitle">Experimenting With <code>fstab</code></p>
+      </header>
+
+      <!-- Synopsis -->
+      <section class="synopsis">
+        <h2>Synopsis</h2>
+        <p>In this entry I refer again to the lab Shevek has made me, found at the bottom of this page. As has been the case with this particular sandbox, there is no guide or context, so I have Shevek make me a lesson plan and guide. Of all the booting labs thus far, this one actually works the way Shevek intended. We explore modifying <code>/etc/fstab</code>, remdiate the fault, and dive into the mechanics of <code>systemctl</code>.</p>
+
+      </section>
+
+      <!-- Collapsible Sections -->
+      <section class="entry-sections" aria-label="Expandable sections">
+
+        <!-- Questions -->
+        <details class="panel" id="questions">
+          <summary>Questions &amp; Objectives</summary>
+          <div class="panel-body">
+            <ol class="process-list">
+              <li>I want to understand what <code>fstab</code> is and it's role in booting.</li>
+              <li>I will deliberately miscofigure <code>fstab</code> to see it's effects.</li>
+              <li>I will then reconfigure the system so that it is returned to normal operation.</li>
+              <li>What is the nature of <code>systemctl</code>?</li>
+            </ol>
+          </div>
+        </details>
+
+        <!-- Process -->
+        <details class="panel" id="process">
+          <summary>Process</summary>
+          <div class="panel-body">
+            <ol class="process-list">
+
+              <!-- Step 1 -->
+            <ol>
+             <li>
+                 <p><strong>As the sandbox has been a huge dissapointment with regards to interactiveness, I immediately just have Shevek make me a guided lesson for this section of the lab: fstab.</strong> I will say this, I at least appreciate that he is having me do this in the order of the boot chain so I become more familiar with it.</p>
+                     <!--- Iimage 1.1 --->
+                <section class="image-grid">
+                <div class="image-card">
+                    <h3><code>fstab</code> Lesson Plan 1</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_1-1.png" alt="fstab Lesson 1" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_1-1.png" alt="fstab lesson 1" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+         
+                    <!--- Image 1.2 --->
+                <div class="image-card">
+                    <h3><code>fstab</code> Lesson Plan 2</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_1-2.png" alt="fstab Lesson 2" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_1-2.png" alt="fstab lesson 2" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                    <!--- Image 1.3 --->
+                <div class="image-card">
+                    <h3><code>fstab</code> Lesson Plan 3</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_1-3.png" alt="fstab Lesson 3" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_1-3.png" alt="fstab lesson 3" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                    <!--- Image 1.4 --->
+                <div class="image-card">
+                    <h3><code>fstab</code> Lesson Plan 4</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_1-4.png" alt="fstab Lesson 4" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_1-4.png" alt="fstab lesson 4" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                    <!--- Image 1.5 --->
+                <div class="image-card">
+                    <h3><code>fstab</code> Lesson Plan 5</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_1-5.png" alt="fstab Lesson 5" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_1-5.png" alt="fstab lesson 5" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                    <!--- Image 1.6 --->
+                <div class="image-card">
+                    <h3><code>fstab</code> Lesson Plan 6</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_1-6.png" alt="fstab Lesson 6" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_1-6.png" alt="fstab lesson 6" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                    <!--- Image 1.7 --->
+                <div class="image-card">
+                    <h3><code>fstab</code> Lesson Plan 7</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_1-7.png" alt="fstab Lesson 7" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_1-7.png" alt="fstab lesson 7" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                    <!--- Image 1.8 --->
+                <div class="image-card">
+                    <h3><code>fstab</code> Lesson Plan 8</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_1-8.png" alt="fstab Lesson 8" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_1-8.png" alt="fstab lesson 8" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+             </li>
+
+            <!--- Step 2 --->
+            <li>
+                <p><strong>I follow Sheveks instructions and the lab functions as intended.</strong> I have to become <code>root</code> before I can modify the file. I then access <code>/etc/fstab</code> and add a mount to the mix. Next, I reboot to see the results. I remount <code>root</code> as writtable, then I access <code>/etc/fstab</code> and change it back to it's original state. Lastly, I tell <code>systemd</code> to continue boot with <code>systemctl</code>.</p>
+
+                <!--- Image 2.1 -->
+
+                <section class="image-grid">
+                <div class="image-card">
+                    <h3>Modifying <code>fstab</code> 1</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_2-1.png" alt="Modifying fstab 1" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_2-1.png" alt="Modifying fstab 1" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+           
+                <!--- Image 2.2 --->
+                <div class="image-card">
+                    <h3>Modifying <code>fstab</code> 2</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_2-2.png" alt="Modifying fstab 2" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_2-2.png" alt="Modifying fstab 2" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Image 2.3 --->
+                <div class="image-card">
+                    <h3>Modifying <code>fstab</code> 3</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_2-3.png" alt="Modifying fstab 3" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_2-3.png" alt="Modifying fstab 3" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Image 2.4 --->
+                <div class="image-card">
+                    <h3>Modifying <code>fstab</code> 4</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_2-4.png" alt="Modifying fstab 4" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_2-4.png" alt="Modifying fstab 4" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Image 2.5 --->
+                <div class="image-card">
+                    <h3>Modifying <code>fstab</code> 5</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_2-5.png" alt="Modifying fstab 5" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_2-5.png" alt="Modifying fstab 5" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Image 2.6 --->
+                <div class="image-card">
+                    <h3>Modifying <code>fstab</code> 6</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_2-6.png" alt="Modifying fstab 6" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_2-6.png" alt="Modifying fstab 6" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Image 2.7 --->
+                <div class="image-card">
+                    <h3>Modifying <code>fstab</code> 7</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_2-7.png" alt="Modifying fstab 7" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_2-7.png" alt="Modifying fstab 7" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Image 2.8 --->
+                <div class="image-card">
+                    <h3>Modifying <code>fstab</code> 8</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_2-8.png" alt="Modifying fstab 8" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_2-8.png" alt="Modifying fstab 8" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Image 2.9 --->
+                <div class="image-card">
+                    <h3>Modifying <code>fstab</code> 9</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_2-9.png" alt="Modifying fstab 9" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_2-9.png" alt="Modifying fstab 9" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Image 2.10 --->
+                <div class="image-card">
+                    <h3>Modifying <code>fstab</code> 10</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_2-10.png" alt="Modifying fstab 10" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_2-10.png" alt="Modifying fstab 10" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Image 2.11 --->
+                <div class="image-card">
+                    <h3>Modifying <code>fstab</code> 11</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_2-11.png" alt="Modifying fstab 11" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_2-11.png" alt="Modifying fstab 11" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+             </li>
+
+             <!--- Step 3 --->
+             <li>
+                 <p><strong>And it's that simple. Things went smoothly for a change, but I still have questions about what exactly I am doing when I use <code>systemctl</code>. I have Shevek break it down for me.</strong> It would appear <code>systemctl</code> is a means of controlling <code>systemd</code>.</p>
+
+               <!--- Image 3.1 -->
+
+                <section class="image-grid">
+                <div class="image-card">
+                    <h3><code>systemctl</code> Explained 1</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_3-1.png" alt="systemctl Explained 1" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_3-1.png" alt="systemctl Explained 1" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+            <!--- Image 3.2 --->
+                <div class="image-card">
+                    <h3><code>systemctl</code> Explained 2</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_3-2.png" alt="systemctl Explained 2" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_3-2.png" alt="systemctl Explained 2" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+            <!--- Image 3.3 --->
+                <div class="image-card">
+                    <h3><code>systemctl</code> Explained 3</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_3-3.png" alt="systemctl Explained 3" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_3-3.png" alt="systemctl Explained 3" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+            <!--- Image 3.4 --->
+                <div class="image-card">
+                    <h3><code>systemctl</code> Explained 4</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_3-4.png" alt="systemctl Explained 4" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_3-4.png" alt="systemctl Explained 4" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+            <!--- Image 3.5 --->
+                <div class="image-card">
+                    <h3><code>systemctl</code> Explained 5</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_3-5.png" alt="systemctl Explained 5" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_3-5.png" alt="systemctl Explained 5" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+            <!--- Image 3.6 --->
+                <div class="image-card">
+                    <h3><code>systemctl</code> Explained 6</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_3-6.png" alt="systemctl Explained 6" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_3-6.png" alt="systemctl Explained 6" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+            <!--- Image 3.7 --->
+                <div class="image-card">
+                    <h3><code>systemctl</code> Explained 7</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_3-7.png" alt="systemctl Explained 7" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_3-7.png" alt="systemctl Explained 7" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+             </li>
+
+            <!--- Step 4 --->
+             <li>
+                 <p><strong>As I have made a habit of doing, I say back to Shevek what my understanding from this lesson is.</strong> As is always the case, I'm close, but not quite. He refines it and clarifies the things I don't quite understand.</p>
+
+                 <!--- Image 4.1 --->
+                <section class="image-grid">
+                <div class="image-card">
+                    <h3><code>fstab</code>Lesson Review 1</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_4-1.png" alt="fstab Review 1" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_4-1.png" alt="fstab Review 1" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                <!--- Image 4.2 --->
+                <div class="image-card">
+                    <h3><code>fstab</code>Lesson Review 2</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_4-2.png" alt="fstab Review 2" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_4-2.png" alt="fstab Review 2" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+               <!--- Image 4.3 --->
+                <div class="image-card">
+                    <h3><code>fstab</code>Lesson Review 3</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_4-3.png" alt="fstab Review 3" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_4-3.png" alt="fstab Review 3" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+
+                    <!--- Image 4.4 --->
+                <div class="image-card">
+                    <h3><code>fstab</code>Lesson Review 4</h3>
+                    <figure class="entry-image summary-16x9">
+                        <details>
+                            <summary>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_4-4.png" alt="fstab Review 4" />
+                            </summary>
+                            <div class="fullscreen">
+                                <button class="fs-close" type="button" aria-label="Close image">x</button>
+                                <img src="/images/2026/01/2026-01-27_fstab/Fig_4-4.png" alt="fstab Review 4" />
+                            </div>
+                        </details>
+                    </figure>
+                </div>
+             </li>
+            
+            </ol>
+        </div>
+        </details>
+        <!-- Conclusions -->
+        <details class="panel" id="conclusions">
+          <summary>Conclusions</summary>
+          <div class="panel-body">
+              <p>Corrupting fstab is relatively straight forward and simple, but has devastating implications for the system. If unable to mount something, the system will drop into emergency mode. If it fails to mount root, it defaults to <code>dracut</code>. If it fails to mount another item, it defaults to <code>systemd</code>. The <code>root</code> filesystem needs to be made writtable in <code>systemd</code> emergency shell before <code>fstab</code> can be corrected. <code>systemctl</code> is a useful tool for managing <code>systemd</code>.</p>   
+          </div>
+        </details>
+
+        <!-- Haiku -->
+        <details class="panel" id="haiku">
+          <summary>Shevek's Haiku</summary>
+          <div class="panel-body">
+              <p>Readonly root waits,<br>
+              A single line breaks the boot —<br>
+Mount, mend, rise again.</p>
+          </div>
+        </details>
+
+        <!--- Sandbox --->
+        <details class="panel" id="sandbox">
+            <summary>Sandbox</summary>
+            <div class="panel-body">
+                <p><a href="https://github.com/trout-ninja/asktheargus/releases/download/boot_fault_sandbox_V1.0.0/boot_fault_lab.zip">Shevek7</p>
+            </div>
+        </details>
+      </section>
+    </main>
+  </body>
+</html>
